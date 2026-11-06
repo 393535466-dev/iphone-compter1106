@@ -24,6 +24,13 @@ watch(() => state.status, status => { if (status !== 'connected') cancelVoice() 
 function visibility() { if (document.visibilityState === 'hidden') cancelVoice() }
 document.addEventListener('visibilitychange', visibility)
 function cancelVoice() {
+  if ((listening.value || finishing.value) && !manual && voice.partial) {
+    const phrase = voice.partial
+    const space = /[A-Za-z0-9.!?]$/.test(draft.value) && /^[A-Za-z0-9]/.test(phrase) ? ' ' : ''
+    draft.value += space + phrase
+    localStorage.setItem('cmdpalm-ai-draft', draft.value)
+    voice.partial = ''
+  }
   listening.value = false; finishing.value = false; clearTimeout(finishTimer)
   void stopVoice(true)
 }

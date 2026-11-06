@@ -88,8 +88,8 @@ def score(kind,p):
     if kind=="desktop":return len(a)==1 and has("system",name="showDesktop")
     return len(a)==1 and has("system",name={"copy":"copy","undo":"undo","select":"selectAll"}[kind])
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument("--limit",type=int,default=30);parser.add_argument("--suite",choices=["regression","holdout"],default="regression");args=parser.parse_args()
-    base=json.loads((ROOT/"local-cache/private/ai-config.json").read_text())
+    parser=argparse.ArgumentParser();parser.add_argument("--limit",type=int,default=30);parser.add_argument("--suite",choices=["regression","holdout"],default="regression");parser.add_argument("--config",type=pathlib.Path,default=pathlib.Path(os.environ.get("CMDPALM_AI_CONFIG",str(pathlib.Path.home()/"Library/Application Support/CmdPalm AI/ai-config.json"))));args=parser.parse_args()
+    base=json.loads(args.config.read_text())
     models=[("deepseek","deepseek-flash"),("qwen","qwen3.7-flash"),("qwen","qwen-flash")]
     result_dir=ROOT/"local-cache/evaluation"
     if args.suite=="holdout":result_dir=result_dir/"holdout"

@@ -10,11 +10,14 @@ vi.mock('../src/lib/assistant', () => ({
   assistant: reactive({ phase: 'idle', question: '', original: '', speechProvider: 'aliyun', message: '', steps: [] }),
   checkAI: () => {}, stopAssistant: () => {}, perform: mock.perform,
 }))
-vi.mock('../src/lib/voice', () => ({
-  voice: reactive({ active: false, partial: '', error: '' }), voiceSupported: () => true,
-  startVoice: async (cb: (s: string) => void) => { mock.final = cb; const m = await import('../src/lib/voice'); m.voice.active = true },
-  stopVoice: async () => { const m = await import('../src/lib/voice'); m.voice.active = false },
-}))
+vi.mock('../src/lib/voice', () => {
+  const voice = reactive({ active: false, partial: '', error: '' })
+  return {
+    voice, voiceSupported: () => true,
+    startVoice: async (cb: (s: string) => void) => { mock.final = cb; voice.active = true },
+    stopVoice: async () => { voice.active = false },
+  }
+})
 beforeEach(() => { localStorage.clear(); mock.handlers = []; mock.perform.mockClear(); mock.final = null })
 const emit = (state: string) => mock.handlers.forEach(h => h({ t: 'voice', state }))
 it('executes once on a complete stopped event without a second transcription button', async () => {
@@ -39,5 +42,19 @@ it('keeps received text without executing when final recognition fails', async (
   emit('error'); emit('stopped'); await wrapper.vm.$nextTick()
   expect(mock.perform).not.toHaveBeenCalled()
   expect(wrapper.get('textarea').element.value).toBe('打开')
+  wrapper.unmount()
+})
+
+it('keeps unconfirmed visible words as an editable draft after an interrupted recording', async () => {
+  const View = (await import('../src/views/AssistantView.vue')).default
+  const wrapper = mount(View)
+  await wrapper.get('[aria-label="开始语音指令"]').trigger('click')
+  const { voice } = await import('../src/lib/voice')
+  voice.partial = '打开 Chrome'
+  emit('error')
+  await wrapper.vm.$nextTick()
+  expect(wrapper.get('textarea').element.value).toBe('打开 Chrome')
+  expect(mock.perform).not.toHaveBeenCalled()
+  expect(localStorage.getItem('cmdpalm-ai-draft')).toBe('打开 Chrome')
   wrapper.unmount()
 })

@@ -84,5 +84,17 @@
       "transcript": "你好。"
     }
   ],
-  "note": "Synthetic audio only. Prepared runs wait 3 seconds before activation. firstTextMs includes preparation; finishMs measures after stop. No iPhone microphone or cellular-path accuracy claim."
+  "note": "Synthetic audio only. Prepared runs wait 3 seconds before activation. firstTextMs includes preparation; finishMs measures after stop. No iPhone microphone or cellular-path accuracy claim.",
+  "preparedAutoHello": {
+    "audioMs": 926.375,
+    "error": null,
+    "finishMs": 451.4169692993164,
+    "firstFinalMs": 4542.352080345154,
+    "firstTextMs": 3905.822992324829,
+    "locale": "auto",
+    "preparationMs": 3006.376028060913,
+    "readyMs": 3006.862998008728,
+    "timedOut": false,
+    "transcript": "你好。"
+  }
 }
