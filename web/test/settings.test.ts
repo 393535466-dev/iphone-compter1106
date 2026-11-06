@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defaultSettings, migrate } from '../src/lib/settings'
+import { defaultSettings, introduceVoiceControl, migrate, settings } from '../src/lib/settings'
 
 describe('migrating stored settings', () => {
   it('keeps other settings when a gesture map is null', () => {
@@ -33,4 +33,15 @@ describe('migrating stored settings', () => {
     expect(out.haptics).toBe(true)
     expect(out.scrollSpeed).toBe(4)
   })
+})
+
+it('introduces voice control once instead of leaving an upgraded phone in keyboard dictation', () => {
+  localStorage.removeItem('cmdpalm.voice-home.v1')
+  settings.tab = 'keyboard'
+  introduceVoiceControl()
+  expect(settings.tab).toBe('assistant')
+  settings.tab = 'keyboard'
+  introduceVoiceControl()
+  expect(settings.tab).toBe('keyboard')
+  expect(defaultSettings().tab).toBe('assistant')
 })

@@ -96,5 +96,17 @@
     "readyMs": 3006.862998008728,
     "timedOut": false,
     "transcript": "你好。"
+  },
+  "foregroundLeaseAfter30SecondIdle": {
+    "audioMs": 926.375,
+    "error": null,
+    "finishMs": 603.8399934768677,
+    "firstFinalMs": 34466.24195575714,
+    "firstTextMs": 33973.42002391815,
+    "locale": "auto",
+    "preparationMs": 33025.599002838135,
+    "readyMs": 33026.55494213104,
+    "timedOut": false,
+    "transcript": "你好。"
   }
 }

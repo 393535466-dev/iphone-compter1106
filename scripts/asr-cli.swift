@@ -31,6 +31,16 @@ struct VoiceUpdate: Sendable { var state: VoiceState; var text: String?; var isF
             asr.prepare(locale:locale)
             Thread.sleep(forTimeInterval:3)
         }
+        if let flag = CommandLine.arguments.first(where:{$0.hasPrefix("--idle-seconds=")}),
+           let duration = Double(flag.dropFirst("--idle-seconds=".count)), duration > 0 {
+            var waited = 0.0
+            while waited < min(60,duration) {
+                asr.prepare(locale:locale)
+                let step = min(10,duration-waited)
+                Thread.sleep(forTimeInterval:step)
+                waited += step
+            }
+        }
         let activation = Date()
         guard asr.start(session:1,locale:locale) else { fatalError("ASR is not configured.") }
         for start in stride(from:0,to:pcm.count,by:640) {

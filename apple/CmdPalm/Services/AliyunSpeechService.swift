@@ -1,6 +1,6 @@
 import Foundation
 
-/// Credentials and streaming sockets stay on the Mac. A single silent warm connection expires after 20 seconds.
+/// Credentials and streaming sockets stay on the Mac. A single silent warm connection expires shortly after the foreground page stops renewing its lease.
 final class AliyunSpeechService: @unchecked Sendable {
     private let queue = DispatchQueue(label: "dev.cmdpalm.ai.asr")
     private let update: @Sendable (UInt64, VoiceUpdate) -> Void
@@ -12,6 +12,7 @@ final class AliyunSpeechService: @unchecked Sendable {
         var id: UInt64 = 0
         var active = false
         var locale = "zh"
+        var warmUntil = Date()
         var ready = false
         var stopping = false
         var pending: [Data] = []
@@ -43,17 +44,27 @@ final class AliyunSpeechService: @unchecked Sendable {
     func prepare(locale: String? = nil) {
         guard let fresh = makeSession() else { return }
         queue.async { [self] in
-            if let prepared, prepared.configuration == fresh.configuration, prepared.locale == Self.language(locale) { fresh.socket.cancel(with:.normalClosure,reason:nil); return }
+            if let prepared, prepared.configuration == fresh.configuration, prepared.locale == Self.language(locale) {
+                prepared.warmUntil = Date().addingTimeInterval(25)
+                fresh.socket.cancel(with:.normalClosure,reason:nil)
+                return
+            }
             prepared?.socket.cancel(with:.goingAway,reason:nil)
             prepared = fresh
             fresh.locale = Self.language(locale)
+            fresh.warmUntil = Date().addingTimeInterval(25)
             connect(fresh)
             configure(fresh)
-            queue.asyncAfter(deadline:.now()+20) { [self] in
-                guard prepared === fresh, !fresh.active else { return }
-                prepared = nil
-                fresh.socket.cancel(with:.normalClosure,reason:nil)
-            }
+            expirePrepared(fresh)
+        }
+    }
+    private func expirePrepared(_ session: Session) {
+        let delay = max(0.1,session.warmUntil.timeIntervalSinceNow)
+        queue.asyncAfter(deadline:.now()+delay) { [self] in
+            guard prepared === session, !session.active else { return }
+            if session.warmUntil > Date() { expirePrepared(session); return }
+            prepared = nil
+            session.socket.cancel(with:.normalClosure,reason:nil)
         }
     }
     func start(session id: UInt64, locale: String?) -> Bool {

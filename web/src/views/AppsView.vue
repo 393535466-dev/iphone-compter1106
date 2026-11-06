@@ -10,6 +10,7 @@ import { addTileToCurrentPage, newTile } from '@/lib/deck'
 import { haptic } from '@/lib/haptics'
 import type { AppEntry, AppOp } from '@/lib/protocol'
 import { settings } from '@/lib/settings'
+import { selectTab } from '@/lib/tabs'
 
 const filter = ref<'running' | 'all'>('running')
 const query = ref('')
@@ -70,6 +71,7 @@ function onClick(app: AppEntry) {
 <template>
   <div class="flex h-full flex-col">
     <div class="flex flex-col gap-2 px-3 pt-1 pb-2">
+      <button type="button" @click="selectTab('assistant')" class="rounded-xl bg-accent-soft px-3 py-2 text-sm text-accent">语音打开或切换应用 →</button>
       <label class="flex h-10 items-center gap-2 rounded-xl bg-surface-3 px-3 text-muted">
         <Search :size="16" />
         <input v-model="query" type="search" class="min-w-0 flex-1 bg-transparent text-[15px] text-text outline-none" placeholder="Search apps on the Mac" />

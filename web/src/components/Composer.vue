@@ -7,6 +7,7 @@ import { useHeldPointers } from '@/lib/heldPointers'
 import { edit, keyDown, keyUp, modifiers, tap, tapChar, typeText } from '@/lib/input'
 import { Key } from '@/lib/keys'
 import { settings } from '@/lib/settings'
+import { selectTab } from '@/lib/tabs'
 import { diff, graphemes } from '@/lib/text'
 import { startVoice, stopVoice, voice, voiceSupported } from '@/lib/voice'
 import HapticSwitch from './HapticSwitch.vue'
@@ -121,7 +122,7 @@ async function toggleVoice() {
 }
 
 // Also cancels a start still waiting for the microphone.
-const endVoice = () => void stopVoice()
+const endVoice = () => void stopVoice(true)
 // Views stay alive when switching tabs; the microphone must not.
 onDeactivated(endVoice)
 onBeforeUnmount(endVoice)
@@ -173,6 +174,10 @@ defineExpose({ focus: () => field.value?.focus() })
 
 <template>
   <div class="flex flex-col gap-2">
+    <div class="flex items-center justify-between gap-2 text-xs text-muted">
+      <span>这里是键盘与原文输入</span>
+      <button type="button" @click="endVoice(); selectTab('assistant')" class="text-accent underline" aria-label="用语音控制 Mac 应用">语音控制应用 →</button>
+    </div>
     <ModifierStrip />
     <div class="flex h-11 gap-1.5">
       <label
@@ -249,13 +254,14 @@ defineExpose({ focus: () => field.value?.focus() })
         <button
           v-if="voiceOk"
           type="button"
-          class="grid size-9 place-items-center rounded-full transition-colors"
+          class="inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-3 transition-colors"
           :class="voice.active ? 'bg-bad text-white' : 'bg-surface-3 text-text'"
-          :aria-label="voice.active ? 'Stop dictation' : 'Dictate'"
+          :aria-label="voice.active ? '停止原文听写' : '原文听写到 Mac 输入框'"
           @click="toggleVoice"
         >
           <Square v-if="voice.active" :size="14" fill="currentColor" />
           <Mic v-else :size="18" />
+          <span class="text-xs">听写</span>
         </button>
         <button
           v-if="!live"

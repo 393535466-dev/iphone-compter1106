@@ -34,6 +34,11 @@ for step in invalid:
 assert "error" in call({"plan":{"decision":"execute","steps":valid*2}},True)
 cases=[
  ("你好","noop",None),
+ ("打开微信","execute",None),
+ ("帮我打开微信","execute",None),
+ ("请帮我把微信调出来","execute",None),
+ ("麻烦切到微信","execute",None),
+ ("微信启动一下","execute",None),
  ("Everything.","clarify",None),
  ("Please type this exactly: Don't close Chrome. Keep GitHub Actions unchanged.","execute","Don't close Chrome. Keep GitHub Actions unchanged."),
  ("微信输入：Hello world，下午三点 review PR。","execute","Hello world，下午三点 review PR。"),
@@ -44,4 +49,9 @@ for text,decision,literal in cases:
     result=call({"text":text,"context":{"recentApp":"com.apple.finder"}})
     assert result["decision"]==decision and result["source"]=="local",(text,result)
     if literal is not None: assert result["steps"][-1]["text"]==literal,(text,result)
-print("Offline intent contract: "+str(len(valid)+len(invalid)+len(cases)+1)+" checks passed; no API or desktop actions.")
+    if "微信" in text and literal is None:
+        assert result["steps"]==[{"kind":"app","id":"com.tencent.xinWeChat","op":"open"}],(text,result)
+for text in ["不要打开微信","别帮我打开微信","先别打开微信，打开访达"]:
+    result=call({"text":text})
+    assert result["source"]!="local" and result["decision"]!="execute",(text,result)
+print("Offline intent contract: "+str(len(valid)+len(invalid)+len(cases)+4)+" checks passed; no API or desktop actions.")

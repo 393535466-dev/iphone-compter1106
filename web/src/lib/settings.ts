@@ -119,7 +119,7 @@ export function defaultSettings(): Settings {
     rememberDevice: true,
     deviceName: '',
     showAdvanced: false,
-    tab: 'trackpad',
+    tab: 'assistant',
     deckPage: '',
   }
 }
@@ -224,4 +224,16 @@ export function resetSettings(section?: (keyof Settings)[]) {
     if (key === 'deviceName' || key === 'tab' || key === 'deckPage') continue
     ;(settings as unknown as Record<string, unknown>)[key] = structuredClone(defaults[key])
   }
+}
+
+// Introduce the control screen once, including phones with an older saved keyboard tab.
+let voiceHomeIntroduced = false
+export function introduceVoiceControl() {
+  if (voiceHomeIntroduced) return
+  try {
+    if (localStorage.getItem('cmdpalm.voice-home.v1')) { voiceHomeIntroduced = true; return }
+    localStorage.setItem('cmdpalm.voice-home.v1', '1')
+  } catch { /* Keep the choice within this page when storage is unavailable. */ }
+  voiceHomeIntroduced = true
+  settings.tab = 'assistant'
 }

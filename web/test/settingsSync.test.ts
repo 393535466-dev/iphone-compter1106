@@ -126,6 +126,7 @@ describe('synced payload', () => {
 
 describe('reconciling with the Mac', () => {
   it('applies a newer copy from the Mac without echoing it back', async () => {
+    prefs.settings.tab = 'keyboard'
     const remoteBoard = { id: 'r', name: 'Remote', cols: 3, rows: 2, trackpad: false, keys: [] }
     const socket = connect({
       settings: {
@@ -136,7 +137,7 @@ describe('reconciling with the Mac', () => {
     expect(prefs.settings.theme).toBe('light')
     expect(prefs.settings.pointerSpeed).toBe(2)
     expect(prefs.settings.deviceName).toBe('')
-    expect(prefs.settings.tab).toBe('trackpad')
+    expect(prefs.settings.tab).toBe('keyboard')
     expect(boards.keyboards.boards.map((b) => b.name)).toEqual(['Remote'])
     expect(boards.keyboards.active).toBe('r')
     await settle(10_000)

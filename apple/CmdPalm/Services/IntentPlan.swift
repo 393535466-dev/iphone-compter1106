@@ -135,12 +135,17 @@ enum IntentPlan {
         }
         let aliases = ["微信":"com.tencent.xinWeChat", "访达":"com.apple.finder", "finder":"com.apple.finder",
                        "chrome":"com.google.Chrome", "谷歌浏览器":"com.google.Chrome", "safari":"com.apple.Safari",
-                       "备忘录":"com.apple.Notes"]
+                       "备忘录":"com.apple.Notes", "文本编辑":"com.apple.TextEdit", "vscode":"com.microsoft.VSCode"]
         for app in apps {
             let id = app["id"] ?? ""
             let names = [app["name"] ?? ""] + aliases.filter { $0.value == id }.map { $0.key }
             for name in names where !name.isEmpty {
-                if clean == "打开" + name.lowercased() || clean == "open " + name.lowercased() {
+                let escaped = NSRegularExpression.escapedPattern(for:name.lowercased())
+                let polite = "(?:(?:请|帮我|麻烦你?|给我)\\s*){0,2}(?:把\\s*)?"
+                let leading = "^" + polite + "(?:打开|启动|切到|切换到)\\s*" + escaped + "(?:\\s*(?:一下|吧))?$"
+                let trailing = "^" + polite + escaped + "\\s*(?:打开|启动|调出来|叫出来|切到前台|切换到前台)(?:一下|吧)?$"
+                if clean.range(of:leading,options:.regularExpression) != nil || clean.range(of:trailing,options:.regularExpression) != nil ||
+                   clean == "打开" + name.lowercased() || clean == "open " + name.lowercased() {
                     return outcome("execute", "打开" + name, steps: [["kind":"app","id":id,"op":"open"]])
                 }
                 let prefix = name + "输入"

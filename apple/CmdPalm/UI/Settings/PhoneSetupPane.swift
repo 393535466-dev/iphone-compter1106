@@ -10,8 +10,8 @@ struct PhoneSetupPane: View {
         Form {
             Section {
                 VStack(alignment: .leading, spacing: 10) {
-                    Step(1, "Join the same Wi-Fi network as this Mac.")
-                    Step(2, "Scan the QR code with the phone’s camera, or type the address in its browser and enter the PIN.")
+                    Step(1, preferences.linkAddress == .custom ? "Use the VPN or HTTPS connection configured for this Mac. A public HTTPS address also works over mobile data." : "Join the same Wi-Fi network as this Mac.")
+                    Step(2, preferences.allowPin ? "Scan the QR code with the phone’s camera, or type the address in its browser and enter the PIN." : "Scan the QR code with the phone’s camera. This Mac uses private QR pairing; PIN pairing is turned off.")
                     Step(3, "Add CmdPalm to the Home Screen to use it full screen: Share → Add to Home Screen on iPhone and iPad, or the browser menu on Android.")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

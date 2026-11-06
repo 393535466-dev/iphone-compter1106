@@ -10,10 +10,11 @@ import { token } from '@/lib/device'
 import { layout } from '@/lib/layout'
 import { pairingLink } from '@/lib/pairing'
 import { lazy } from '@/lib/reload'
-import { settings } from '@/lib/settings'
+import { introduceVoiceControl, settings } from '@/lib/settings'
 import ConnectView from '@/views/ConnectView.vue'
 import OfflineView from '@/views/OfflineView.vue'
 import TrackpadView from '@/views/TrackpadView.vue'
+import AssistantView from '@/views/AssistantView.vue'
 
 // Less-used sections load on first visit to keep startup fast on phones.
 const KeyboardView = lazy(() => import('@/views/KeyboardView.vue'))
@@ -21,7 +22,6 @@ const DeckView = lazy(() => import('@/views/DeckView.vue'))
 const AppsView = lazy(() => import('@/views/AppsView.vue'))
 const MediaView = lazy(() => import('@/views/MediaView.vue'))
 
-const AssistantView = lazy(() => import('@/views/AssistantView.vue'))
 const views = { assistant: AssistantView, trackpad: TrackpadView, keyboard: KeyboardView, deck: DeckView, apps: AppsView, media: MediaView }
 
 const showSettings = ref(false)
@@ -50,7 +50,7 @@ const welcomed = ref(false)
 watch(
   () => state.status,
   (status) => {
-    if (status === 'connected') welcomed.value = true
+    if (status === 'connected') { welcomed.value = true; introduceVoiceControl() }
     else if (status === 'idle' || status === 'denied') welcomed.value = false
   },
 )

@@ -1,9 +1,9 @@
-import { Sparkles, AppWindow, Keyboard, LayoutGrid, Music, Touchpad } from '@lucide/vue'
+import { Mic, AppWindow, Keyboard, LayoutGrid, Music, Touchpad } from '@lucide/vue'
 import { haptic } from './haptics'
 import { settings, type Tab } from './settings'
 
 export const TABS: { id: Tab; label: string; icon: typeof Touchpad }[] = [
-  { id: 'assistant', label: '助手', icon: Sparkles },
+  { id: 'assistant', label: '语音控制', icon: Mic },
   { id: 'trackpad', label: 'Trackpad', icon: Touchpad },
   { id: 'keyboard', label: 'Keyboard', icon: Keyboard },
   { id: 'deck', label: 'Deck', icon: LayoutGrid },
