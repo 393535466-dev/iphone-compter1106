@@ -1,147 +1,30 @@
-# Security
+# CmdPalm AI 安全说明
 
-CmdPalm lets another device type and click on your Mac, so the bar for who may
-connect is high. This page describes how that works and how to report a
-problem.
+本分支基于 CmdPalm，沿用其配对与输入边界。原版完整说明留在 [SECURITY.upstream.md](SECURITY.upstream.md)；其中“只有本地转写、无其它云服务”的描述不适用于本分支启用 AI 的情况。
 
-## Reporting a vulnerability
+## 数据流
 
-Please report vulnerabilities privately through
-[GitHub security advisories](https://github.com/rahatsagor/CmdPalm/security/advisories/new)
-rather than in a public issue. Include the CmdPalm version, what an attacker
-needs (same network, a paired device, physical access), and steps to
-reproduce. You should hear back within a week.
+- 手动触控板、键盘和 Deck 连接到用户自己的 Mac。
+- 阿里云模式：手机录音经 Mac 发送阿里云北京实时识别；麦克风只在用户点击后开启。预热只建立有时限的连接，不采集或上传音频。
+- Apple 模式：沿用 CmdPalm 的 Mac 本机识别约束，不支持本机识别时报告不可用。
+- 模型理解会发送用户的指令文字、应用名称及 bundle id、当前前台与近期应用标识、必要的补充回答。不会发送截图、文稿或聊天正文来猜测界面。
+- 为核对文字是否正确插入，Mac 可短暂读取当前输入框的原文与选区。这些内容只在 Mac 内存中使用，最多保留 60 秒；手机只收到随机核验凭据和状态。
+- API Key 保存在 Mac 本机权限 0600 的配置文件中，原生设置使用 SecureField，不通过 HTTP 或 WebSocket 返回。配置、构建缓存、签名资料均忽略，不提交到仓库。
 
-Only the latest release receives fixes.
+## 远程连接
 
-## How devices are trusted
+默认端口 18890，独立数据目录。HTTPS 可用原版局域网证书或用户自己的反向代理。手机录音需要 HTTPS。
 
-- **Pairing.** A device can pair in three ways:
-  - the single-use code in the QR code (144 bits of randomness),
-  - the six-digit PIN shown on the Mac,
-  - approval on the Mac, which shows a prompt you have to accept.
+公网部署时，须在 Mac 设置自定义 HTTPS 地址并信任本机代理，同时关闭 PIN 配对及陌生设备配对申请，只使用私人的一次性二维码。二维码内含 144 位随机配对凭据，10 分钟过期且一次使用后轮换。已配对设备使用独立令牌自动重连；在 Mac 的 Devices 中移除设备即可撤销并断开。
 
-  PIN and approval can each be turned off in **Settings → Phone Setup**. The
-  code and PIN change every 10 minutes and after each pairing that uses
-  either of them. The PIN also changes after each lockout.
-- **Guessing.** The PIN only works while the Mac shows it in the CmdPalm menu
-  or settings, and for three minutes after, so nobody can try PINs while you
-  aren't pairing. After 5 wrong PINs an address is locked out, starting at
-  30 seconds and doubling up to 15 minutes. IPv6 addresses are counted per
-  /64 network, so one device can't dodge the lockout by switching addresses.
-  Wrong PINs are forgotten after an hour without any, so occasional typos
-  don't add up to longer lockouts. After 20 wrong PINs within a minute, from
-  any mix of addresses, pairing by PIN or approval pauses for everyone until
-  the minute has passed. The QR code is too long to guess, so it keeps
-  working during a lockout.
-- **Approval requests.** Each address (or IPv6 /64 network) can wait on one
-  request at a time. After 3 requests in a row are declined, left
-  unanswered or abandoned by the device, that address has to wait before
-  asking again, from 30 seconds up to 15 minutes. Device names and models
-  are shown without invisible formatting characters, so a request can't
-  disguise itself, and pressing Return never approves one.
-- **Remembered devices** receive a random token. The Mac stores only a SHA-256
-  hash of it, together with the device ID, in
-  `~/Library/Application Support/CmdPalm`. Removing a device in
-  **Settings → Devices** revokes its token, deletes the phone settings kept
-  for it and disconnects it immediately.
-- **Other websites** can't drive CmdPalm from a browser on your network: the
-  server rejects WebSocket connections whose `Origin` doesn't match its own
-  address, and answers only requests addressed to names public DNS can't
-  serve, which blocks DNS rebinding: an IP address, `localhost`, a name
-  without dots, a name under `.local`, `.home.arpa` or `.internal`, or the
-  custom address you set on the Mac.
-- **Connection limits.** Each address (or IPv6 /64 network) can hold at most
-  16 connections, and idle connections are closed and recycled, so another
-  device on the network can't use up the connections your phone needs. An
-  allowed proxy on the Mac may hold up to 64, since it connects for every
-  phone that uses it.
+持有有效配对权限的设备可以控制 Mac 的键盘鼠标。不要公开配对二维码或令牌，不要在不信任的网络通过明文 HTTP 配对。云识别和 LLM 请求由 Mac 发起，Tailscale 等代理只承担连通性，不负责理解或转写。
 
-## Network
+## 助手执行
 
-CmdPalm listens on one port (8790 by default) on your local network. That
-port speaks both HTTP and HTTPS.
+模型输出必须通过整份计划校验，限制真实应用、动作种类、参数与最多 8 步。AI 不执行任意脚本、任意鼠标点击或自动回车发送消息。原版手动 Deck 的能力保留，Shell 仍需用户在 Mac 主动启用。
 
-- **HTTP** is the default because phones can open it without any setup. On
-  HTTP, anyone who can watch your Wi-Fi traffic could see what you type, and
-  could copy a remembered device's token and use it to connect as that
-  device until you remove it. Use HTTP only on networks you trust, and
-  remove any device you no longer use. The phone shows **Not encrypted**
-  while it is connected over HTTP.
-- **HTTPS** uses a certificate authority created on your Mac the first time
-  CmdPalm runs. Its private key never leaves the Mac. The authority is
-  limited by name constraints to local addresses, so even if it were stolen
-  it could not be used to impersonate public websites. Install it on your
-  phone from **Settings → Phone Setup → Encrypted Connection**, and compare
-  the SHA-256 fingerprint shown there if you want to be sure. The
-  [encrypted connection guide](https://cmdpalm.app/docs/encrypted-connection/)
-  walks through installing, checking and removing it.
-- **A reverse proxy on the Mac** is ignored unless you turn on **Accept
-  connections through a proxy on this Mac** in **Settings → Advanced**. With
-  it on, CmdPalm believes the `X-Forwarded-For`, `X-Forwarded-Proto` and
-  `X-Forwarded-Host` headers on connections from the Mac itself, so each
-  phone behind the proxy keeps its own address and lockouts. Devices on the
-  network can't use these headers, and browsers can't add them to the
-  requests CmdPalm answers, but another program on the Mac could claim a
-  different address for itself. It still needs the code, the PIN or your
-  approval, within the same limits. If your proxy makes CmdPalm reachable
-  from the internet, turn off **Allow devices to ask to pair**.
+输入核验失败不会自动重复输入，断线或取消后也不会重放未完成动作。无法观察实际结果时明确标记未核实。助手只对用户当前窗口与输入位置操作；它不会自动判断哪份文稿、哪个联系人是用户真正想选的对象。
 
-There are no accounts, no analytics and no cloud relay. CmdPalm contacts
-GitHub to check for updates, and nothing else. Voice typing is transcribed on
-the Mac itself; if on-device recognition isn't available for a language,
-voice typing is unavailable rather than sent to a server.
+## 构建
 
-## What a paired device can do
-
-A paired device can do anything you can do with a keyboard and mouse. Beyond
-that:
-
-- **Shell commands** from deck buttons are off until you allow them in
-  **Settings → Deck**, and turning them on asks for confirmation.
-- **Links** from deck buttons can't open `javascript:` or `data:` URLs.
-  `file:` links can run programs, so they work only while shell commands are
-  allowed.
-- **The clipboard** is only sent to a phone when that phone asks for it, and
-  never when it holds something marked as concealed, such as a password
-  copied from a password manager. When text is sent as a paste, CmdPalm puts
-  it on the clipboard briefly and then restores what was there, marked so
-  clipboard managers skip both.
-- macOS **Secure Input** (password fields, for example) blocks typed text.
-  CmdPalm tells the phone when that happens instead of working around it.
-
-**Pause** in the menu bar panel stops all input immediately, including text
-still being typed, deck buttons that are still running and shell commands
-they started. While paused, a device can't run actions, read or set the
-clipboard, or start voice input. Apps and Shortcuts that a button already
-opened keep running, as if you had opened them yourself.
-
-## Updates
-
-Updates are delivered with [Sparkle](https://sparkle-project.org). Both the
-update feed and every update archive are signed with an EdDSA key held only by
-the release workflow, and the app refuses updates that fail either check.
-
-CmdPalm is not notarized by Apple. Releases are built on GitHub Actions from
-the tagged source, signed with the same self-signed certificate every time
-and with the hardened runtime turned on, and `SHA256SUMS` is attached to
-every release.
-
-Every release file also has a signed
-[build attestation](https://github.com/rahatsagor/CmdPalm/attestations). It
-proves the file was built by this repository's release workflow, and from
-which commit. To check a download, install the [GitHub CLI](https://cli.github.com)
-and run:
-
-```sh
-gh attestation verify CmdPalm.dmg --repo rahatsagor/CmdPalm
-```
-
-An attestation shows where a file came from, not that the code is free of
-bugs. Version 0.2.0 and earlier don't have one.
-
-## Logs
-
-Logs in `~/Library/Logs/CmdPalm` record connections, errors and timing. They
-never contain typed text, dictation, clipboard contents or deck button
-contents.
+保留 hardened runtime 与原版必要 entitlement；未关闭 Gatekeeper、未安装受信任根证书。开发版使用本机固定签名，尚未取得 Apple Developer ID 公证，也未配置本分支自动更新发布密钥。不要将上游发布签名或 attestation 当作本分支编译产物的证明。

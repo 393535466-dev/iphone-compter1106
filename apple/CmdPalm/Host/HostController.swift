@@ -62,7 +62,10 @@ final class HostController {
         let speech = SpeechService { session, update in
             reference.host?.voiceUpdate(session: session, update: update)
         }
-        bridge = HostBridge(apps: AppCatalog(), volume: volume, pasteboard: Pasteboard(), speech: speech) { [weak self] event in
+        let cloudSpeech = AliyunSpeechService { session, update in
+            reference.host?.voiceUpdate(session:session,update:update)
+        }
+        bridge = HostBridge(apps: AppCatalog(), volume: volume, pasteboard: Pasteboard(), speech: speech, cloudSpeech: cloudSpeech) { [weak self] event in
             DispatchQueue.main.async {
                 MainActor.assumeIsolated { self?.handle(event) }
             }
@@ -297,7 +300,7 @@ final class HostController {
             allowPin: preferences.allowPin,
             allowApproval: preferences.allowApproval,
             allowShell: preferences.allowShell,
-            voiceAvailable: preferences.voiceEnabled && SpeechService.mayBeAvailable
+            voiceAvailable: preferences.voiceEnabled && (AliyunSpeechService.configured || SpeechService.mayBeAvailable)
         )
     }
 

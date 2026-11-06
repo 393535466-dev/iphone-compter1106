@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 import Synchronization
 
 /// A late-bound, weak reference to the core host, for services created
@@ -20,15 +21,19 @@ final class HostBridge: HostDelegate, Sendable {
     let volume: AudioVolume
     let pasteboard: Pasteboard
     let speech: SpeechService
+    let cloudSpeech: AliyunSpeechService
+    private let planner = IntentPlannerService()
+    private let cloudSessions = Mutex(Set<UInt64>())
     /// Mirrors the host config's `allowShell`, which also governs file URLs.
     private let allowsShell = Mutex(false)
     private let events: @Sendable (HostEvent) -> Void
 
-    init(apps: AppCatalog, volume: AudioVolume, pasteboard: Pasteboard, speech: SpeechService, events: @escaping @Sendable (HostEvent) -> Void) {
+    init(apps: AppCatalog, volume: AudioVolume, pasteboard: Pasteboard, speech: SpeechService, cloudSpeech: AliyunSpeechService, events: @escaping @Sendable (HostEvent) -> Void) {
         self.apps = apps
         self.volume = volume
         self.pasteboard = pasteboard
         self.speech = speech
+        self.cloudSpeech = cloudSpeech
         self.events = events
     }
 
@@ -58,9 +63,68 @@ final class HostBridge: HostDelegate, Sendable {
 
     func endPaste() { pasteboard.endPaste() }
 
-    func voiceStart(session: UInt64, locale: String?) -> Bool { speech.start(session: session, locale: locale) }
+    func planInstruction(text: String, context: String) -> String {
+        var current = (context.data(using:.utf8).flatMap { try? JSONSerialization.jsonObject(with:$0) } as? [String:Any]) ?? [:]
+        current["frontApp"] = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? ""
+        let list = apps.list().map { ["id":$0.id,"name":$0.name] }
+        return planner.plan(text:text,context:current,apps:list)
+    }
 
-    func voiceAudio(session: UInt64, pcm: Data) { speech.append(session: session, pcm: pcm) }
+    func verifyAction(action: String) -> String { ActionVerifier.verify(action) }
 
-    func voiceStop(session: UInt64, cancel: Bool) { speech.stop(session: session, cancel: cancel) }
+    func aiStatus() -> String {
+        let config = AIConfiguration.load()
+        return IntentPlan.json(["configured": !(config?.model.apiKey.isEmpty ?? true),
+            "provider":config?.provider ?? "", "model":config?.model.model ?? "",
+            "speechProvider":AliyunSpeechService.configured ? "aliyun" : "apple"])
+    }
+
+    func openUrlInApp(url: String, app: String) -> Bool {
+        guard let url = URL(string:url), ["http","https"].contains(url.scheme ?? ""),
+              let application = NSWorkspace.shared.urlForApplication(withBundleIdentifier:app) else { return false }
+        let done = DispatchSemaphore(value:0)
+        let success = Mutex(false)
+        DispatchQueue.main.async {
+            NSWorkspace.shared.open([url],withApplicationAt:application,configuration:NSWorkspace.OpenConfiguration()) { _,error in
+                success.withLock { $0 = error == nil }; done.signal()
+            }
+        }
+        return done.wait(timeout:.now()+3) == .success && success.withLock { $0 }
+    }
+
+    func openFolder(name: String) -> Bool {
+        let directory: FileManager.SearchPathDirectory?
+        switch name {
+        case "downloads": directory = .downloadsDirectory
+        case "desktop": directory = .desktopDirectory
+        case "documents": directory = .documentDirectory
+        case "home": directory = nil
+        default: return false
+        }
+        let url = directory.flatMap { FileManager.default.urls(for:$0,in:.userDomainMask).first } ?? FileManager.default.homeDirectoryForCurrentUser
+        DispatchQueue.main.async { NSWorkspace.shared.open(url) }
+        return true
+    }
+
+    func prepareVoice(locale: String?) { cloudSpeech.prepare(locale:locale) }
+
+    func voiceStart(session: UInt64, locale: String?) -> Bool {
+        if AliyunSpeechService.configured {
+            speech.stop(session:session,cancel:true)
+            _ = cloudSessions.withLock { $0.insert(session) }
+            return cloudSpeech.start(session:session,locale:locale)
+        }
+        _ = cloudSessions.withLock { $0.remove(session) }
+        return speech.start(session:session,locale:locale == "auto" ? nil : locale)
+    }
+
+    func voiceAudio(session: UInt64, pcm: Data) {
+        if cloudSessions.withLock({ $0.contains(session) }) { cloudSpeech.append(session:session,pcm:pcm) }
+        else { speech.append(session:session,pcm:pcm) }
+    }
+
+    func voiceStop(session: UInt64, cancel: Bool) {
+        if cloudSessions.withLock({ $0.contains(session) }) { cloudSpeech.stop(session:session,cancel:cancel) }
+        else { speech.stop(session:session,cancel:cancel) }
+    }
 }

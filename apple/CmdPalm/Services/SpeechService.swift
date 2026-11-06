@@ -129,7 +129,12 @@ final class SpeechService: @unchecked Sendable {
                 // The recognizer never delivered a final result. The id is
                 // reused by the next dictation, which this must not end.
                 guard sessions[id] === session, session.stopping else { return }
-                finish(id, session)
+                let pending = Array(session.closing.values) + [session.current].compactMap { $0 }
+                if pending.contains(where: { !$0.text.trimmingCharacters(in: .whitespaces).isEmpty }) {
+                    sessions[id] = nil
+                    discard(session)
+                    send(id, .error, message: "末尾语音没有完整确认，草稿已保留，没有执行指令。")
+                } else { finish(id, session) }
             }
         }
     }

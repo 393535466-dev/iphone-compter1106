@@ -138,6 +138,12 @@ pub trait HostDelegate: Send + Sync {
     fn begin_paste(&self, text: String) -> bool;
     /// Restore the clipboard saved by [`HostDelegate::begin_paste`].
     fn end_paste(&self);
+    fn plan_instruction(&self, text: String, context: String) -> String;
+    fn ai_status(&self) -> String;
+    fn verify_action(&self, action: String) -> String;
+    fn open_url_in_app(&self, url: String, app: String) -> bool;
+    fn open_folder(&self, name: String) -> bool;
+    fn prepare_voice(&self, locale: Option<String>);
     fn voice_start(&self, session: u64, locale: Option<String>) -> bool;
     /// 16 kHz mono signed 16-bit little-endian PCM.
     fn voice_audio(&self, session: u64, pcm: Vec<u8>);

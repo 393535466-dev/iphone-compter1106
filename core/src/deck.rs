@@ -162,7 +162,10 @@ pub fn validate_action(action: &Action, depth: usize) -> Result<(), DeckError> {
                 return Err(DeckError::Invalid("text is too long".into()));
             }
         }
-        Action::Url { url } => {
+        Action::Url { url, app } => {
+            if app.as_ref().is_some_and(|id| id.is_empty() || id.len() > MAX_NAME) {
+                return Err(DeckError::Invalid("invalid browser".into()));
+            }
             if url.len() > MAX_TEXT || !url.contains(':') {
                 return Err(DeckError::Invalid("invalid URL".into()));
             }
@@ -188,6 +191,20 @@ pub fn validate_action(action: &Action, depth: usize) -> Result<(), DeckError> {
             }
             for step in steps {
                 validate_action(step, depth + 1)?;
+            }
+        }
+        Action::Folder { name } => {
+            if !["downloads", "desktop", "documents", "home"].contains(&name.as_str()) {
+                return Err(DeckError::Invalid("invalid folder".into()));
+            }
+        }
+        Action::Volume { value, delta, muted } => {
+            if value.is_some() && delta.is_some()
+                || value.is_none() && delta.is_none() && muted.is_none()
+                || value.is_some_and(|v| !v.is_finite() || !(0.0..=1.0).contains(&v))
+                || delta.is_some_and(|v| !v.is_finite() || !(-1.0..=1.0).contains(&v) || v == 0.0)
+            {
+                return Err(DeckError::Invalid("invalid volume".into()));
             }
         }
         Action::Media { .. } | Action::System { .. } => {}

@@ -17,7 +17,7 @@ final class AppModel {
 }
 
 extension View {
-    func appEnvironment(_ model: AppModel = .shared) -> some View {
+    @MainActor func appEnvironment(_ model: AppModel = .shared) -> some View {
         environment(model.host)
             .environment(model.preferences)
             .environment(model.permissions)

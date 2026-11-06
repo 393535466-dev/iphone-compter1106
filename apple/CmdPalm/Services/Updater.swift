@@ -1,3 +1,19 @@
+#if CMDPALM_LOCAL_BUILD
+import AppKit
+import Observation
+
+/// Local development builds never run an updater or replace the upstream release.
+@MainActor @Observable final class Updater: NSObject {
+    private(set) var canCheck = false
+    private(set) var pendingVersion: String?
+    private(set) var lastChecked: Date?
+    let isConfigured = false
+    var automaticallyChecks = false
+    var automaticallyDownloads = false
+    func start() {}
+    func checkForUpdates() {}
+}
+#else
 import AppKit
 import Observation
 import Sparkle
@@ -124,3 +140,5 @@ extension Updater: SPUStandardUserDriverDelegate {
         }
     }
 }
+
+#endif

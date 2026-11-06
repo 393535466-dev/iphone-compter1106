@@ -1,0 +1,105 @@
+{
+  "date": "2026-11-06",
+  "syntheticOnly": true,
+  "desktopActions": false,
+  "latencyDefinition": "one persistent Swift IntentPlannerService process per provider; warm successful model requests only; failed requests are listed separately; P95 is nearest rank",
+  "note": "Qwen3.7's extra newTab before a targeted browser URL is semantically accepted; earlier strict minimal-step scoring rejected it.",
+  "models": [
+    {
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "results": [
+        {
+          "suite": "regression",
+          "passed": 30,
+          "total": 30,
+          "localCases": 6,
+          "warmSuccessfulModelCalls": 23,
+          "modelP50Ms": 1431,
+          "modelP95Ms": 1689,
+          "meanInputTokensWithUsage": 773.2,
+          "meanOutputTokensWithUsage": 40.5,
+          "failed": []
+        },
+        {
+          "suite": "holdout",
+          "passed": 15,
+          "total": 15,
+          "localCases": 0,
+          "warmSuccessfulModelCalls": 14,
+          "modelP50Ms": 1338,
+          "modelP95Ms": 1550,
+          "meanInputTokensWithUsage": 787.1,
+          "meanOutputTokensWithUsage": 40,
+          "failed": []
+        }
+      ]
+    },
+    {
+      "provider": "qwen",
+      "model": "qwen3.7-flash",
+      "results": [
+        {
+          "suite": "regression",
+          "passed": 29,
+          "total": 30,
+          "localCases": 6,
+          "warmSuccessfulModelCalls": 23,
+          "modelP50Ms": 1636,
+          "modelP95Ms": 2166,
+          "meanInputTokensWithUsage": 744,
+          "meanOutputTokensWithUsage": 85.6,
+          "failed": [
+            "把你好这两个字写到微信当前输入框里，不要发出去。"
+          ]
+        },
+        {
+          "suite": "holdout",
+          "passed": 15,
+          "total": 15,
+          "localCases": 0,
+          "warmSuccessfulModelCalls": 14,
+          "modelP50Ms": 1582,
+          "modelP95Ms": 2139,
+          "meanInputTokensWithUsage": 753.7,
+          "meanOutputTokensWithUsage": 71.4,
+          "failed": []
+        }
+      ]
+    },
+    {
+      "provider": "qwen",
+      "model": "qwen-flash",
+      "results": [
+        {
+          "suite": "regression",
+          "passed": 29,
+          "total": 30,
+          "localCases": 6,
+          "warmSuccessfulModelCalls": 22,
+          "modelP50Ms": 1100,
+          "modelP95Ms": 1655,
+          "meanInputTokensWithUsage": 752.5,
+          "meanOutputTokensWithUsage": 42.5,
+          "failed": [
+            "在当前浏览器找一下 node.js stream backpressure 的资料。"
+          ]
+        },
+        {
+          "suite": "holdout",
+          "passed": 14,
+          "total": 15,
+          "localCases": 0,
+          "warmSuccessfulModelCalls": 13,
+          "modelP50Ms": 967,
+          "modelP95Ms": 1417,
+          "meanInputTokensWithUsage": 762.9,
+          "meanOutputTokensWithUsage": 38.9,
+          "failed": [
+            "撤回刚才的编辑。"
+          ]
+        }
+      ]
+    }
+  ]
+}

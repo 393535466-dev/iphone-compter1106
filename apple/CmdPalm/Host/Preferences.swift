@@ -6,7 +6,7 @@ import Observation
 @MainActor
 @Observable
 final class Preferences {
-    static let defaultPort = 8790
+    static let defaultPort = 18890
 
     enum LinkAddress: String, CaseIterable, Identifiable {
         case hostName

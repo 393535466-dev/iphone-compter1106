@@ -81,6 +81,22 @@ impl HostDelegate for Delegate {
         true
     }
     fn end_paste(&self) {}
+    fn plan_instruction(&self, _text: String, _context: String) -> String {
+        r#"{"decision":"noop","message":"Development host: AI is not configured.","steps":[]}"#.into()
+    }
+    fn verify_action(&self, _action: String) -> String {
+        r#"{"state":"unverified","message":"Development host"}"#.into()
+    }
+    fn ai_status(&self) -> String {
+        r#"{"configured":false,"speechProvider":"apple"}"#.into()
+    }
+    fn open_url_in_app(&self, url: String, _app: String) -> bool {
+        self.open_url(url)
+    }
+    fn open_folder(&self, _name: String) -> bool {
+        true
+    }
+    fn prepare_voice(&self, _locale: Option<String>) {}
     fn voice_start(&self, _session: u64, _locale: Option<String>) -> bool {
         false
     }

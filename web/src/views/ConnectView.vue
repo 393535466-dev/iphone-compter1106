@@ -193,7 +193,7 @@ watch(
 
       <p class="mt-6 flex items-start gap-2 text-[13px] leading-relaxed text-faint">
         <ShieldCheck :size="16" class="mt-0.5 shrink-0" />
-        Everything stays on your local network. Nothing is sent to the internet.
+        遥控输入连接这台 Mac。启用助手后，指令会交给 Mac 上配置的模型服务；阿里云语音会发送录音到阿里云。
       </p>
     </div>
   </main>

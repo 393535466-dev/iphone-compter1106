@@ -1,0 +1,871 @@
+{
+  "provider": "qwen",
+  "configuredModel": "qwen3.7-flash",
+  "synthetic": true,
+  "measurement": "one persistent native planner per model; no desktop execution",
+  "rows": [
+    {
+      "text": "声音有点吵，稍微压低一点就好，别静音。",
+      "expected": "down",
+      "passed": true,
+      "elapsedMs": 2656,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "delta": -0.1,
+            "kind": "volume"
+          }
+        ],
+        "summary": "用户要求降低音量但不静音，对应 volume delta -0.1。",
+        "understandingMs": 2650,
+        "usage": {
+          "completion_tokens": 71,
+          "prompt_tokens": 747,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 747
+          },
+          "total_tokens": 818
+        }
+      },
+      "connection": "cold",
+      "semanticPassed": true
+    },
+    {
+      "text": "把声音控制在三成。",
+      "expected": "volume30",
+      "passed": true,
+      "elapsedMs": 1483,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "volume",
+            "value": 0.3
+          }
+        ],
+        "summary": "用户要求将音量设置为30%（三成）。",
+        "understandingMs": 1481,
+        "usage": {
+          "completion_tokens": 67,
+          "prompt_tokens": 740,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 740
+          },
+          "total_tokens": 807
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "微信调出来，我要接着看消息。",
+      "expected": "wechat",
+      "passed": true,
+      "elapsedMs": 1585,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "用户要求调出微信应用以查看消息。根据规则，'调出来'对应 app open 操作。",
+        "understandingMs": 1585,
+        "usage": {
+          "completion_tokens": 91,
+          "prompt_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 744
+          },
+          "total_tokens": 835
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "别开微信了，我现在想看下载文件夹。",
+      "expected": "downloads",
+      "passed": true,
+      "elapsedMs": 1636,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "folder",
+            "name": "downloads"
+          }
+        ],
+        "summary": "用户要求打开下载文件夹，并明确禁止打开微信。当前前台是 Chrome，最近应用是访达。根据规则，打开下载文件夹应使用 folder downloads 操作。",
+        "understandingMs": 1635,
+        "usage": {
+          "completion_tokens": 91,
+          "prompt_tokens": 745,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 745
+          },
+          "total_tokens": 836
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "先把Chrome叫出来，再给我留个空白网页。",
+      "expected": "chrome_tab",
+      "passed": true,
+      "elapsedMs": 1704,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.google.Chrome",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "kind": "system",
+            "name": "newTab"
+          }
+        ],
+        "summary": "用户要求激活当前前台应用 Chrome，并执行新建标签页操作。",
+        "understandingMs": 1703,
+        "usage": {
+          "completion_tokens": 103,
+          "prompt_tokens": 747,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 747
+          },
+          "total_tokens": 850
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "Open Chrome, then search for GitHub Actions deployment examples.",
+      "expected": "chrome_search",
+      "passed": true,
+      "elapsedMs": 2165,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.google.Chrome",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.baidu.com/s?wd=GitHub+Actions+deployment+examples"
+          }
+        ],
+        "summary": "用户要求打开 Chrome 并搜索 GitHub Actions 部署示例。当前前台是 Chrome，但指令明确为 'Open Chrome'，故先执行打开操作以确保焦点正确，随后通过 URL 发起搜索。",
+        "understandingMs": 2165,
+        "usage": {
+          "completion_tokens": 155,
+          "prompt_tokens": 746,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 746
+          },
+          "total_tokens": 901
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "帮我在谷歌浏览器查一下Python decorators。",
+      "expected": "chrome_search",
+      "passed": false,
+      "elapsedMs": 1949,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.google.Chrome",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "kind": "system",
+            "name": "newTab"
+          },
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.baidu.com/s?wd=Python+decorators"
+          }
+        ],
+        "summary": "用户要求在Google Chrome中搜索'Python decorators'。当前前台应用为Chrome，符合目标浏览器。",
+        "understandingMs": 1948,
+        "usage": {
+          "completion_tokens": 152,
+          "prompt_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 744
+          },
+          "total_tokens": 896
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "只关这个网页，浏览器别退出。",
+      "expected": "close_tab",
+      "passed": true,
+      "elapsedMs": 1363,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "closeTab"
+          }
+        ],
+        "summary": "用户要求关闭当前网页但保持浏览器运行，对应 closeTab 操作。",
+        "understandingMs": 1362,
+        "usage": {
+          "completion_tokens": 72,
+          "prompt_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 744
+          },
+          "total_tokens": 816
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "先别打开任何东西，我只是打个招呼。",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 1223,
+      "plan": {
+        "decision": "noop",
+        "message": "你好！有什么我可以帮你的吗？",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "用户明确表示只是打招呼，不需要执行任何操作。",
+        "understandingMs": 1222,
+        "usage": {
+          "completion_tokens": 49,
+          "prompt_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 744
+          },
+          "total_tokens": 793
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把刚才那个应用再叫出来。",
+      "expected": "finder",
+      "passed": true,
+      "elapsedMs": 1666,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.apple.finder",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "用户要求重新打开最近使用过的应用（访达）。",
+        "understandingMs": 1665,
+        "usage": {
+          "completion_tokens": 78,
+          "prompt_tokens": 743,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 743
+          },
+          "total_tokens": 821
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "这个我还要，别关。",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 1455,
+      "plan": {
+        "decision": "noop",
+        "message": "好的，保持现状。",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "用户表达保留当前状态，无操作需求。",
+        "understandingMs": 1454,
+        "usage": {
+          "completion_tokens": 46,
+          "prompt_tokens": 741,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 741
+          },
+          "total_tokens": 787
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "刚才操作的是哪个应用，我忘了。",
+      "expected": "recent_reply",
+      "passed": true,
+      "elapsedMs": 1,
+      "plan": {
+        "decision": "noop",
+        "message": "刚才操作的是访达。",
+        "source": "local",
+        "steps": [],
+        "summary": "刚才操作的是访达。",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "Please type this exactly: Don't close Chrome. Keep GitHub Actions unchanged.",
+      "expected": "literal",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "execute",
+        "message": "原样输入文字",
+        "source": "local",
+        "steps": [
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "Don't close Chrome. Keep GitHub Actions unchanged."
+          }
+        ],
+        "summary": "原样输入文字",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "在微信里输入：Hello world，下午三点 review PR。",
+      "expected": "mixed",
+      "passed": true,
+      "elapsedMs": 1880,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "Hello world，下午三点 review PR。"
+          }
+        ],
+        "summary": "用户要求在微信中输入特定文本。根据规则，需先打开微信应用，然后输入保留原样（包括空格和标点）的正文内容。",
+        "understandingMs": 1879,
+        "usage": {
+          "completion_tokens": 134,
+          "prompt_tokens": 748,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 748
+          },
+          "total_tokens": 882
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把你好这两个字写到微信当前输入框里，不要发出去。",
+      "expected": "hello_wechat",
+      "passed": false,
+      "elapsedMs": 2166,
+      "plan": {
+        "decision": "unsupported",
+        "message": "抱歉，我无法直接操作应用内的具体输入框或执行“不发送”等复杂交互逻辑。我只能控制打开/关闭应用、切换标签页、调整音量或执行通用的系统快捷键（如复制粘贴）。",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "用户要求将文本写入特定应用（微信）的当前输入框且不发送。这属于依据界面状态进行精确控件操作，超出能力范围。",
+        "understandingMs": 2165,
+        "usage": {
+          "completion_tokens": 106,
+          "prompt_tokens": 750,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 750
+          },
+          "total_tokens": 856
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": false
+    },
+    {
+      "text": "打开访达，顺便把声音设成百分之三十。",
+      "expected": "multi",
+      "passed": true,
+      "elapsedMs": 1902,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.apple.finder",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "kind": "volume",
+            "value": 0.3
+          }
+        ],
+        "summary": "用户要求打开访达并将系统音量设置为30%。",
+        "understandingMs": 1901,
+        "usage": {
+          "completion_tokens": 102,
+          "prompt_tokens": 747,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 747
+          },
+          "total_tokens": 849
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "先暂停音乐，我接个电话。",
+      "expected": "pause",
+      "passed": true,
+      "elapsedMs": 1555,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "key": "playPause",
+            "kind": "media"
+          }
+        ],
+        "summary": "用户要求暂停音乐，对应媒体播放控制操作。",
+        "understandingMs": 1554,
+        "usage": {
+          "completion_tokens": 67,
+          "prompt_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 744
+          },
+          "total_tokens": 811
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "在当前浏览器找一下 node.js stream backpressure 的资料。",
+      "expected": "search",
+      "passed": true,
+      "elapsedMs": 2292,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.baidu.com/s?wd=node.js+stream+backpressure"
+          }
+        ],
+        "summary": "用户要求在当前的 Google Chrome 浏览器中搜索 'node.js stream backpressure' 的资料。",
+        "understandingMs": 2291,
+        "usage": {
+          "completion_tokens": 98,
+          "prompt_tokens": 747,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 747
+          },
+          "total_tokens": 845
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "我想看下桌面。",
+      "expected": "desktop",
+      "passed": true,
+      "elapsedMs": 1707,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "showDesktop"
+          }
+        ],
+        "summary": "用户希望查看桌面，根据规则应使用 showDesktop 系统操作。",
+        "understandingMs": 1706,
+        "usage": {
+          "completion_tokens": 71,
+          "prompt_tokens": 739,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 739
+          },
+          "total_tokens": 810
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "复制这段选中的文字。",
+      "expected": "copy",
+      "passed": true,
+      "elapsedMs": 1404,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "copy"
+          }
+        ],
+        "summary": "用户要求复制当前选中的文字，对应系统剪贴板操作。",
+        "understandingMs": 1403,
+        "usage": {
+          "completion_tokens": 70,
+          "prompt_tokens": 741,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 741
+          },
+          "total_tokens": 811
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "刚才那步不要了，撤回一下。",
+      "expected": "undo",
+      "passed": true,
+      "elapsedMs": 1395,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "undo"
+          }
+        ],
+        "summary": "用户要求撤回上一步操作，即执行系统撤销命令。",
+        "understandingMs": 1395,
+        "usage": {
+          "completion_tokens": 68,
+          "prompt_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 744
+          },
+          "total_tokens": 812
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "这个内容我想全部选中。",
+      "expected": "select",
+      "passed": true,
+      "elapsedMs": 1597,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "selectAll"
+          }
+        ],
+        "summary": "用户要求在当前前台应用（Google Chrome）中全选内容。",
+        "understandingMs": 1596,
+        "usage": {
+          "completion_tokens": 68,
+          "prompt_tokens": 741,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 741
+          },
+          "total_tokens": 809
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "帮我把它弄一下。",
+      "expected": "clarify",
+      "passed": true,
+      "elapsedMs": 2055,
+      "plan": {
+        "decision": "clarify",
+        "message": "请问您具体想对哪个应用或文件执行什么操作？例如：打开某个应用、关闭当前页面、调整音量等。",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "指令'把它弄一下'指代不明，缺乏具体操作对象和动作。",
+        "understandingMs": 2054,
+        "usage": {
+          "completion_tokens": 76,
+          "prompt_tokens": 740,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 740
+          },
+          "total_tokens": 816
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "给张三发微信说我晚十分钟到。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 2124,
+      "plan": {
+        "decision": "unsupported",
+        "message": "抱歉，我无法直接操作微信应用内部来查找联系人并发送消息。我只能执行打开应用、切换窗口、调整音量或简单的文本输入等基础系统级操作。",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "用户要求通过微信向特定联系人发送消息，这涉及应用内交互（选择联系人、输入内容、发送），超出了当前基础操作规划器的能力范围。",
+        "understandingMs": 2123,
+        "usage": {
+          "completion_tokens": 99,
+          "prompt_tokens": 744,
+          "prompt_tokens_details": {
+            "cached_tokens": 640,
+            "text_tokens": 744
+          },
+          "total_tokens": 843
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "删除下载里所有PDF。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1564,
+      "plan": {
+        "decision": "unsupported",
+        "message": "抱歉，我无法执行删除文件或搜索文件内容的操作。",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "用户要求删除下载文件夹中的特定文件（PDF），这属于文件内容搜索和文件操作，当前能力不支持。",
+        "understandingMs": 1563,
+        "usage": {
+          "completion_tokens": 66,
+          "prompt_tokens": 741,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 741
+          },
+          "total_tokens": 807
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "运行终端命令 rm -rf ~/Downloads。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1514,
+      "plan": {
+        "decision": "unsupported",
+        "message": "抱歉，我无法执行终端命令或脚本操作。",
+        "model": "qwen3.7-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "用户要求执行终端命令，这超出了当前工具的能力范围。",
+        "understandingMs": 1513,
+        "usage": {
+          "completion_tokens": 54,
+          "prompt_tokens": 745,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 745
+          },
+          "total_tokens": 799
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "输入 Don't close Chrome. Copy the API docs!",
+      "expected": "literal2",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "execute",
+        "message": "原样输入文字",
+        "source": "local",
+        "steps": [
+          {
+            "enter": false,
+            "kind": "text",
+            "text": " Don't close Chrome. Copy the API docs!"
+          }
+        ],
+        "summary": "原样输入文字",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "你好",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "noop",
+        "message": "已听到，这句话没有执行电脑操作。",
+        "source": "local",
+        "steps": [],
+        "summary": "已听到，这句话没有执行电脑操作。",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "微信输入你好",
+      "expected": "hello_wechat",
+      "passed": true,
+      "elapsedMs": 1,
+      "plan": {
+        "decision": "execute",
+        "message": "向微信原样输入",
+        "source": "local",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "你好"
+          }
+        ],
+        "summary": "向微信原样输入",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "Everything.",
+      "expected": "clarify",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "clarify",
+        "message": "你想操作哪个应用，做什么？",
+        "source": "local",
+        "steps": [],
+        "summary": "你想操作哪个应用，做什么？",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    }
+  ]
+}

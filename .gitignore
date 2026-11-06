@@ -30,3 +30,7 @@ sparkle_private_key*
 .idea/
 .vscode/
 *.swp
+
+# Mac-only model credentials
+/ai-config.json
+*.private.json

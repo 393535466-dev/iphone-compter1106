@@ -1,0 +1,442 @@
+{
+  "provider": "qwen",
+  "configuredModel": "qwen-flash",
+  "synthetic": true,
+  "measurement": "one persistent native planner per model; no desktop execution",
+  "rows": [
+    {
+      "text": "麻烦把微信切到前台，先不要输入任何东西。",
+      "expected": "wechat",
+      "passed": true,
+      "elapsedMs": 1863,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "将微信切到前台",
+        "understandingMs": 1852,
+        "usage": {
+          "completion_tokens": 35,
+          "prompt_tokens": 766,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 801
+        }
+      },
+      "connection": "cold",
+      "semanticPassed": true
+    },
+    {
+      "text": "把音量设成20%，不要改静音状态。",
+      "expected": "volume20",
+      "passed": true,
+      "elapsedMs": 1035,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "volume",
+            "value": 0.2
+          }
+        ],
+        "summary": "将音量设置为20%，保持当前静音状态不变。",
+        "understandingMs": 1034,
+        "usage": {
+          "completion_tokens": 61,
+          "prompt_tokens": 767,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 828
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把声音降低10个百分点。",
+      "expected": "down",
+      "passed": true,
+      "elapsedMs": 804,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "delta": -0.1,
+            "kind": "volume"
+          }
+        ],
+        "summary": "降低系统音量10个百分点",
+        "understandingMs": 803,
+        "usage": {
+          "completion_tokens": 30,
+          "prompt_tokens": 760,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 790
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "我只要关掉这个标签，窗口留下。",
+      "expected": "close_tab",
+      "passed": true,
+      "elapsedMs": 1025,
+      "plan": {
+        "decision": "execute",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "closeTab"
+          }
+        ],
+        "summary": "关闭当前标签页，保留窗口",
+        "understandingMs": 1024,
+        "usage": {
+          "completion_tokens": 27,
+          "prompt_tokens": 763,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 790
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "撤回刚才的编辑。",
+      "expected": "undo",
+      "passed": false,
+      "elapsedMs": 840,
+      "plan": {
+        "decision": "clarify",
+        "message": "没有取得明确的任务计划，原话已保留。",
+        "source": "error",
+        "steps": [],
+        "summary": "没有取得明确的任务计划，原话已保留。",
+        "understandingMs": 839
+      },
+      "connection": "warm",
+      "semanticPassed": false
+    },
+    {
+      "text": "在谷歌浏览器找Swift concurrency官方文档。",
+      "expected": "chrome_swift",
+      "passed": true,
+      "elapsedMs": 1417,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.google.Chrome",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.google.com/search?q=Swift+concurrency+官方文档"
+          }
+        ],
+        "summary": "在谷歌浏览器中搜索Swift concurrency官方文档",
+        "understandingMs": 1416,
+        "usage": {
+          "completion_tokens": 104,
+          "prompt_tokens": 762,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 866
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "别弄微信，叫出Safari就行。",
+      "expected": "safari",
+      "passed": true,
+      "elapsedMs": 967,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.apple.Safari",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "叫出Safari浏览器",
+        "understandingMs": 966,
+        "usage": {
+          "completion_tokens": 33,
+          "prompt_tokens": 763,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 796
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把 GitHub Actions 这两个英文单词原样写进文本编辑，不要回车。",
+      "expected": "textedit_literal",
+      "passed": true,
+      "elapsedMs": 1061,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.apple.TextEdit",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "GitHub Actions"
+          }
+        ],
+        "summary": "将 'GitHub Actions' 原样输入到文本编辑中",
+        "understandingMs": 1060,
+        "usage": {
+          "completion_tokens": 54,
+          "prompt_tokens": 772,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 826
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "我想给你说声谢谢，不用动电脑。",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 874,
+      "plan": {
+        "decision": "noop",
+        "message": "不用动电脑，已收到感谢。",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "用户表达感谢，无需操作",
+        "understandingMs": 873,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_tokens": 763,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 791
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "帮我把下载文件夹打开。",
+      "expected": "downloads",
+      "passed": true,
+      "elapsedMs": 823,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "folder",
+            "name": "downloads"
+          }
+        ],
+        "summary": "打开下载文件夹",
+        "understandingMs": 822,
+        "usage": {
+          "completion_tokens": 25,
+          "prompt_tokens": 760,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 785
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "桌面文件夹打开一下。",
+      "expected": "desktop_folder",
+      "passed": true,
+      "elapsedMs": 762,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "folder",
+            "name": "desktop"
+          }
+        ],
+        "summary": "打开桌面文件夹",
+        "understandingMs": 761,
+        "usage": {
+          "completion_tokens": 25,
+          "prompt_tokens": 759,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 784
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把正在写的东西都选上。",
+      "expected": "select",
+      "passed": true,
+      "elapsedMs": 797,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "selectAll"
+          }
+        ],
+        "summary": "选中当前正在编辑的内容",
+        "understandingMs": 796,
+        "usage": {
+          "completion_tokens": 27,
+          "prompt_tokens": 761,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 788
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把微信里的李四那条消息撤回。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1297,
+      "plan": {
+        "decision": "unsupported",
+        "message": "当前不支持在微信中撤回消息的操作。",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "无法撤回微信消息",
+        "understandingMs": 1296,
+        "usage": {
+          "completion_tokens": 30,
+          "prompt_tokens": 764,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 794
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把刚才那个应用切到前台。",
+      "expected": "finder",
+      "passed": true,
+      "elapsedMs": 995,
+      "plan": {
+        "decision": "execute",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [
+          {
+            "id": "com.apple.finder",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "将最近操作的应用（访达）切到前台",
+        "understandingMs": 994,
+        "usage": {
+          "completion_tokens": 37,
+          "prompt_tokens": 761,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 798
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "清空废纸篓。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 842,
+      "plan": {
+        "decision": "unsupported",
+        "message": "当前不支持清空废纸篓的功能。",
+        "model": "qwen-flash",
+        "source": "qwen",
+        "steps": [],
+        "summary": "无法执行清空废纸篓操作",
+        "understandingMs": 841,
+        "usage": {
+          "completion_tokens": 29,
+          "prompt_tokens": 759,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 788
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    }
+  ]
+}

@@ -19,6 +19,9 @@ let stream: MediaStream | null = null
 let node: AudioWorkletNode | null = null
 let finals: ((text: string) => void) | null = null
 let starting = false
+let stopping = false
+let cancelledStop = false
+let flushed: (() => void) | null = null
 /** Bumped by every stop, so a start still awaiting the microphone knows it was cancelled. */
 let generation = 0
 /** Whether the Mac is dictating for this page. Its last update for a dictation
@@ -63,7 +66,7 @@ if (typeof document !== 'undefined') {
 
 /** Start listening. `onFinal` receives each finished phrase. */
 export async function startVoice(onFinal: (text: string) => void, locale = navigator.language) {
-  if (voice.active || starting) return
+  if (voice.active || starting || stopping) return
   voice.error = ''
   voice.partial = ''
   // Reconnecting keeps the last features; a start now would never reach the Mac.
@@ -102,8 +105,10 @@ export async function startVoice(onFinal: (text: string) => void, locale = navig
     if (run !== generation) return discard()
     const source = audio.createMediaStreamSource(media)
     const worklet = new AudioWorkletNode(audio, 'cmdpalm-downsampler', { processorOptions: { rate: RATE } })
-    worklet.port.onmessage = (event: MessageEvent<{ pcm: Int16Array; peak: number }>) => {
-      voice.level = voice.level * 0.6 + event.data.peak * 0.4
+    worklet.port.onmessage = (event: MessageEvent<{ pcm?: Int16Array; peak?: number; flushed?: boolean }>) => {
+      if (event.data.flushed) { flushed?.(); return }
+      if (!event.data.pcm) return
+      voice.level = voice.level * 0.6 + (event.data.peak ?? 0) * 0.4
       sendBinary(encodeAudio(event.data.pcm))
     }
     source.connect(worklet)
@@ -146,17 +151,33 @@ export async function startVoice(onFinal: (text: string) => void, locale = navig
 export async function stopVoice(cancel = false, notifyMac = true) {
   generation++
   starting = false
+  if (stopping) { if (cancel) { cancelledStop = true; finals = null }; return }
+  stopping = true
+  cancelledStop = cancel
   macListening = false
-  if (notifyMac && voice.active) send({ t: 'voiceStop', cancel })
+  const wasActive = voice.active
+  const currentNode = node
+  const currentStream = stream
+  const closing = context
+  node = null; stream = null; context = null
   voice.active = false
   voice.level = 0
-  node?.disconnect()
-  node = null
-  stream?.getTracks().forEach((t) => t.stop())
-  stream = null
-  // Cleared before waiting, so a start meanwhile keeps the context it creates.
-  const closing = context
-  context = null
-  await closing?.close().catch(() => {})
-  if (cancel) finals = null
+  try {
+    currentStream?.getTracks().forEach((t) => t.stop())
+    if (!cancel && currentNode && closing?.state === 'running' && typeof currentNode.port.postMessage === 'function') {
+      const complete = await new Promise<boolean>((resolve) => {
+        const timer = setTimeout(() => resolve(false), 250)
+        flushed = () => { clearTimeout(timer); resolve(true) }
+        currentNode.port.postMessage({ type: 'flush' })
+      })
+      if (!complete) {
+        cancelledStop = true
+        voice.error = '录音末尾没有完整传输，请重试。'
+      }
+    }
+    currentNode?.disconnect()
+    if (notifyMac && wasActive) send({ t: 'voiceStop', cancel: cancelledStop })
+    if (cancelledStop) finals = null
+    await closing?.close().catch(() => {})
+  } finally { flushed = null; stopping = false }
 }

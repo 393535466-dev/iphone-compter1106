@@ -55,7 +55,7 @@ export interface Settings {
   deckPage: string
 }
 
-export type Tab = 'trackpad' | 'keyboard' | 'deck' | 'apps' | 'media'
+export type Tab = 'assistant' | 'trackpad' | 'keyboard' | 'deck' | 'apps' | 'media'
 
 const sys = (name: Extract<Action, { kind: 'system' }>['name']): Action => ({ kind: 'system', name })
 
@@ -144,7 +144,7 @@ const CHOICES: Partial<Record<keyof Settings, readonly string[]>> = {
   sidewaysTurn: ['left', 'right'],
   textMode: ['unicode', 'keystrokes', 'paste'],
   theme: ['system', 'dark', 'light'],
-  tab: ['trackpad', 'keyboard', 'deck', 'apps', 'media'],
+  tab: ['assistant', 'trackpad', 'keyboard', 'deck', 'apps', 'media'],
 }
 
 /** Merge stored values over defaults, dropping anything malformed. */

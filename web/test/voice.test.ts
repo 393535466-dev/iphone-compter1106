@@ -3,9 +3,11 @@ import { FakeSocket, lastSocket, welcome } from './fakeSocket'
 
 let conn: typeof import('../src/lib/connection')
 let voiceLib: typeof import('../src/lib/voice')
+let acknowledgeFlush = true
 let microphone: ((stream: MediaStream) => void)[] = []
 
 class FakeAudioContext {
+  state = 'running'
   destination = {}
   audioWorklet = { addModule: () => Promise.resolve() }
   resume = () => Promise.resolve()
@@ -14,7 +16,12 @@ class FakeAudioContext {
   createGain = () => ({ gain: { value: 1 }, connect: (next: unknown) => next })
 }
 class FakeWorkletNode {
-  port = { onmessage: null }
+  port = {
+    onmessage: null as ((event: any) => void) | null,
+    postMessage: () => {
+      if (acknowledgeFlush) queueMicrotask(() => this.port.onmessage?.({ data: { flushed: true } }))
+    },
+  }
   connect = (next: unknown) => next
   disconnect = () => {}
 }
@@ -35,6 +42,7 @@ beforeEach(async () => {
   vi.stubGlobal('AudioContext', FakeAudioContext)
   vi.stubGlobal('AudioWorkletNode', FakeWorkletNode)
   vi.stubGlobal('isSecureContext', true)
+  acknowledgeFlush = true
   microphone = []
   Object.defineProperty(navigator, 'mediaDevices', {
     configurable: true,
@@ -51,6 +59,7 @@ beforeEach(async () => {
 afterEach(() => {
   conn.disconnect(false)
   vi.unstubAllGlobals()
+  vi.useRealTimers()
 })
 
 describe('voice typing', () => {
@@ -85,4 +94,22 @@ describe('voice typing', () => {
     expect(voiceLib.voice.active).toBe(false)
     expect(voiceLib.voice.error).toBe('The Mac is still busy.')
   })
+})
+
+
+it('cancels recognition if the final audio frame was not acknowledged', async () => {
+  const socket = connected()
+  const heard: string[] = []
+  const start = voiceLib.startVoice(t => heard.push(t))
+  microphone.shift()!(fakeStream())
+  await start
+  acknowledgeFlush = false
+  vi.useFakeTimers()
+  const stop = voiceLib.stopVoice()
+  await vi.advanceTimersByTimeAsync(251)
+  await stop
+  expect(socket.sent.filter(m => m.t === 'voiceStop').at(-1)?.cancel).toBe(true)
+  expect(voiceLib.voice.error).toContain('末尾')
+  socket.receive({ t: 'voice', state: 'stopped', text: 'incomplete command', final: true })
+  expect(heard).toEqual([])
 })

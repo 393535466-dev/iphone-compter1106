@@ -21,7 +21,8 @@ const DeckView = lazy(() => import('@/views/DeckView.vue'))
 const AppsView = lazy(() => import('@/views/AppsView.vue'))
 const MediaView = lazy(() => import('@/views/MediaView.vue'))
 
-const views = { trackpad: TrackpadView, keyboard: KeyboardView, deck: DeckView, apps: AppsView, media: MediaView }
+const AssistantView = lazy(() => import('@/views/AssistantView.vue'))
+const views = { assistant: AssistantView, trackpad: TrackpadView, keyboard: KeyboardView, deck: DeckView, apps: AppsView, media: MediaView }
 
 const showSettings = ref(false)
 

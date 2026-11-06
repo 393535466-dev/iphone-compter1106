@@ -1,14 +1,21 @@
 // Downsamples microphone audio to 16-bit mono PCM at the rate the Mac's
-// speech recognizer expects and posts it in 100 ms chunks.
+// speech recognizer expects and posts it in 20 ms chunks; flushing preserves the final partial frame.
 class Downsampler extends AudioWorkletProcessor {
   constructor(options) {
     super()
     const rate = options.processorOptions?.rate ?? 16000
     this.ratio = sampleRate / rate
     this.pos = 0
-    this.buf = new Int16Array(Math.round(rate / 10))
+    this.buf = new Int16Array(Math.round(rate / 50))
     this.len = 0
     this.peak = 0
+    this.port.onmessage = (event) => {
+      if (event.data?.type !== "flush") return
+      if (this.len) this.port.postMessage({ pcm: this.buf.slice(0, this.len), peak: this.peak })
+      this.len = 0
+      this.peak = 0
+      this.port.postMessage({ flushed: true })
+    }
   }
 
   process(inputs) {

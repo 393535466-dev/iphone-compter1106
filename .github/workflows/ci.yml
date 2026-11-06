@@ -93,6 +93,15 @@ jobs:
       - name: Generate Swift bindings
         # XcodeGen must see the generated Swift file on a fresh checkout.
         run: scripts/build-core.sh
+      - name: Check offline AI intent contracts
+        run: |
+          mkdir -p local-cache/tools
+          xcrun swiftc -sdk "$(xcrun --show-sdk-path)" -swift-version 6 \
+            apple/CmdPalm/Services/AIConfiguration.swift \
+            apple/CmdPalm/Services/IntentPlan.swift \
+            apple/CmdPalm/Services/IntentPlannerService.swift \
+            scripts/intent-cli.swift -o local-cache/tools/intent-cli
+          python3 scripts/test-intent.py
       - name: Build phone client
         working-directory: web
         run: bun install --frozen-lockfile && bun run build

@@ -47,18 +47,20 @@ struct GeneralPane: View {
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                if !AliyunSpeechService.configured {
                 PermissionRow(
                     title: "Speech Recognition",
                     detail: "Turns speech from your phone’s microphone into text. Optional.",
                     granted: permissions.speech == .authorized,
                     action: permissions.speech == .notDetermined ? "Allow…" : "Open Settings…"
                 ) { permissions.requestSpeech() }
+                }
             }
 
             Section("Dictation") {
                 DescribedToggle(
                     "Allow dictation from devices",
-                    detail: "Your phone streams microphone audio to this Mac, which transcribes it on the Mac. Speech is never sent anywhere else. Needs the encrypted connection from Phone Setup.",
+                    detail: "Microphone audio goes through this Mac to the recognizer selected in AI 与语音. Aliyun mode sends audio to Aliyun; Apple mode stays on this Mac. The phone needs HTTPS.",
                     isOn: $preferences.voiceEnabled
                 )
             }

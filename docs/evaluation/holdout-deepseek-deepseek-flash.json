@@ -1,0 +1,488 @@
+{
+  "provider": "deepseek",
+  "configuredModel": "deepseek-flash",
+  "synthetic": true,
+  "measurement": "one persistent native planner per model; no desktop execution",
+  "rows": [
+    {
+      "text": "麻烦把微信切到前台，先不要输入任何东西。",
+      "expected": "wechat",
+      "passed": true,
+      "elapsedMs": 2029,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "将微信切到前台，不输入任何内容",
+        "understandingMs": 2023,
+        "usage": {
+          "completion_tokens": 45,
+          "prompt_cache_hit_tokens": 512,
+          "prompt_cache_miss_tokens": 279,
+          "prompt_tokens": 791,
+          "prompt_tokens_details": {
+            "cached_tokens": 512
+          },
+          "total_tokens": 836
+        }
+      },
+      "connection": "cold",
+      "semanticPassed": true
+    },
+    {
+      "text": "把音量设成20%，不要改静音状态。",
+      "expected": "volume20",
+      "passed": true,
+      "elapsedMs": 1550,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "volume",
+            "value": 0.2
+          }
+        ],
+        "summary": "将音量设为20%，不改变静音状态",
+        "understandingMs": 1549,
+        "usage": {
+          "completion_tokens": 35,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 150,
+          "prompt_tokens": 790,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 825
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把声音降低10个百分点。",
+      "expected": "down",
+      "passed": true,
+      "elapsedMs": 1346,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "delta": -0.1,
+            "kind": "volume"
+          }
+        ],
+        "summary": "降低音量10个百分点",
+        "understandingMs": 1345,
+        "usage": {
+          "completion_tokens": 30,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 144,
+          "prompt_tokens": 784,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 814
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "我只要关掉这个标签，窗口留下。",
+      "expected": "close_tab",
+      "passed": true,
+      "elapsedMs": 1493,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "closeTab"
+          }
+        ],
+        "summary": "关闭当前标签页，保留窗口",
+        "understandingMs": 1492,
+        "usage": {
+          "completion_tokens": 32,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 148,
+          "prompt_tokens": 788,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 820
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "撤回刚才的编辑。",
+      "expected": "undo",
+      "passed": true,
+      "elapsedMs": 776,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "undo"
+          }
+        ],
+        "summary": "撤回刚才的编辑",
+        "understandingMs": 775,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 143,
+          "prompt_tokens": 783,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 811
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "在谷歌浏览器找Swift concurrency官方文档。",
+      "expected": "chrome_swift",
+      "passed": true,
+      "elapsedMs": 1234,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.google.Chrome",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.baidu.com/s?wd=Swift%20concurrency%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"
+          }
+        ],
+        "summary": "在Chrome中搜索Swift concurrency官方文档",
+        "understandingMs": 1233,
+        "usage": {
+          "completion_tokens": 95,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 148,
+          "prompt_tokens": 788,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 883
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "别弄微信，叫出Safari就行。",
+      "expected": "safari",
+      "passed": true,
+      "elapsedMs": 1133,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.apple.Safari",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "打开Safari，不操作微信",
+        "understandingMs": 1132,
+        "usage": {
+          "completion_tokens": 41,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 149,
+          "prompt_tokens": 789,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 830
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把 GitHub Actions 这两个英文单词原样写进文本编辑，不要回车。",
+      "expected": "textedit_literal",
+      "passed": true,
+      "elapsedMs": 1428,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.apple.TextEdit",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "GitHub Actions"
+          }
+        ],
+        "summary": "打开文本编辑并原样输入指定英文单词，不回车",
+        "understandingMs": 1427,
+        "usage": {
+          "completion_tokens": 59,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 155,
+          "prompt_tokens": 795,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 854
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "我想给你说声谢谢，不用动电脑。",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 1331,
+      "plan": {
+        "decision": "noop",
+        "message": "不客气，很高兴能帮到你。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户表达感谢并明确不用操作电脑",
+        "understandingMs": 1331,
+        "usage": {
+          "completion_tokens": 32,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 148,
+          "prompt_tokens": 788,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 820
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "帮我把下载文件夹打开。",
+      "expected": "downloads",
+      "passed": true,
+      "elapsedMs": 1435,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "folder",
+            "name": "downloads"
+          }
+        ],
+        "summary": "打开下载文件夹",
+        "understandingMs": 1434,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 144,
+          "prompt_tokens": 784,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 812
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "桌面文件夹打开一下。",
+      "expected": "desktop_folder",
+      "passed": true,
+      "elapsedMs": 1208,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "folder",
+            "name": "desktop"
+          }
+        ],
+        "summary": "打开桌面文件夹",
+        "understandingMs": 1207,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 143,
+          "prompt_tokens": 783,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 811
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把正在写的东西都选上。",
+      "expected": "select",
+      "passed": true,
+      "elapsedMs": 1481,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "selectAll"
+          }
+        ],
+        "summary": "全选当前正在编辑的内容",
+        "understandingMs": 1480,
+        "usage": {
+          "completion_tokens": 31,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 146,
+          "prompt_tokens": 786,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 817
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把微信里的李四那条消息撤回。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1354,
+      "plan": {
+        "decision": "unsupported",
+        "message": "我无法在微信里定位联系人消息或执行撤回操作。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户要求撤回微信中李四的消息",
+        "understandingMs": 1353,
+        "usage": {
+          "completion_tokens": 37,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 147,
+          "prompt_tokens": 787,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 824
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把刚才那个应用切到前台。",
+      "expected": "finder",
+      "passed": true,
+      "elapsedMs": 1162,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.apple.finder",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "把最近操作过的访达切到前台",
+        "understandingMs": 1160,
+        "usage": {
+          "completion_tokens": 41,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 146,
+          "prompt_tokens": 786,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 827
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "清空废纸篓。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1029,
+      "plan": {
+        "decision": "unsupported",
+        "message": "我暂时不支持清空废纸篓这类文件删除操作。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户要求清空废纸篓",
+        "understandingMs": 1028,
+        "usage": {
+          "completion_tokens": 38,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 145,
+          "prompt_tokens": 785,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 823
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    }
+  ]
+}

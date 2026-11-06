@@ -103,6 +103,8 @@ function onCompositionEnd() {
   syncLive()
 }
 
+const voiceLanguage = ref(localStorage.getItem('cmdpalm-ai-language') ?? 'zh-CN')
+function saveVoiceLanguage() { localStorage.setItem('cmdpalm-ai-language', voiceLanguage.value) }
 const voiceOk = computed(() => state.features.voice && voiceSupported())
 
 async function toggleVoice() {
@@ -115,7 +117,7 @@ async function toggleVoice() {
     const spaced = text.value && !/\s$/.test(text.value) ? ` ${phrase}` : phrase
     text.value += spaced
     if (live.value) syncLive()
-  })
+  }, voiceLanguage.value)
 }
 
 // Also cancels a start still waiting for the microphone.
@@ -240,6 +242,10 @@ defineExpose({ focus: () => field.value?.focus() })
           <Eraser :size="17" />
         </button>
         <span class="flex-1" />
+        <select v-if="voiceOk" v-model="voiceLanguage" aria-label="Dictation language"
+          @change="saveVoiceLanguage" class="max-w-24 rounded-lg bg-surface-3 p-1 text-xs text-muted">
+          <option value="zh-CN">中文</option><option value="auto">中英自动</option><option value="en-US">English</option>
+        </select>
         <button
           v-if="voiceOk"
           type="button"

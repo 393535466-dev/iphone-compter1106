@@ -1,13 +1,14 @@
 import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
-    case general, phone, devices, deck, advanced, about
+    case general, ai, phone, devices, deck, advanced, about
 
     var id: Self { self }
 
     var title: String {
         switch self {
         case .general: "General"
+        case .ai: "AI 与语音"
         case .phone: "Phone Setup"
         case .devices: "Devices"
         case .deck: "Deck"
@@ -19,6 +20,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     var symbol: String {
         switch self {
         case .general: "gearshape.fill"
+        case .ai: "sparkles"
         case .phone: "qrcode"
         case .devices: "iphone.gen3"
         case .deck: "square.grid.3x2.fill"
@@ -30,6 +32,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     var color: Color {
         switch self {
         case .general: .gray
+        case .ai: .purple
         case .phone: .blue
         case .devices: .green
         case .deck: .orange
@@ -70,6 +73,7 @@ struct SettingsView: View {
             Group {
                 switch tab {
                 case .general: GeneralPane()
+                case .ai: AIPane()
                 case .phone: PhoneSetupPane()
                 case .devices: DevicesPane()
                 case .deck: DeckPane()

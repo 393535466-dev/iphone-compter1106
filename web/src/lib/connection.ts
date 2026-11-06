@@ -434,7 +434,7 @@ export function runAction(action: Action): Promise<{ ok: boolean; message?: stri
     // calling it a failure. A late failure still arrives as an error notice.
     const timer = setTimeout(() => {
       pendingActions.delete(id)
-      resolve({ ok: true })
+      resolve({ ok: false, message: "未收到 Mac 的执行回执，请核对后再操作。" })
     }, 15000)
     pendingActions.set(id, { resolve, timer })
   })

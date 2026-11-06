@@ -92,6 +92,22 @@ impl HostDelegate for MockDelegate {
         true
     }
     fn end_paste(&self) {}
+    fn plan_instruction(&self, _text: String, _context: String) -> String {
+        r#"{"decision":"noop","message":"Development host: AI is not configured.","steps":[]}"#.into()
+    }
+    fn verify_action(&self, _action: String) -> String {
+        r#"{"state":"unverified","message":"Development host"}"#.into()
+    }
+    fn ai_status(&self) -> String {
+        r#"{"configured":false,"speechProvider":"apple"}"#.into()
+    }
+    fn open_url_in_app(&self, url: String, _app: String) -> bool {
+        self.open_url(url)
+    }
+    fn open_folder(&self, _name: String) -> bool {
+        true
+    }
+    fn prepare_voice(&self, _locale: Option<String>) {}
     fn voice_start(&self, _session: u64, _locale: Option<String>) -> bool {
         // Starting recognition is slow; a stop sent meanwhile must wait for it.
         std::thread::sleep(Duration::from_millis(100));
@@ -867,4 +883,35 @@ fn input_sent_after_a_paste_waits_for_its_command_v() {
     let down = |key| events.iter().position(|e| matches!(e, Synth::Key { code, down: true, .. } if *code == key));
     let (pasted, returned) = (down(KEY_V).expect("⌘V posted"), down(KEY_RETURN).expect("Return posted"));
     assert!(pasted < returned, "Return arrived before the paste: {events:?}");
+}
+
+#[test]
+fn assistant_readbacks_require_real_postconditions_and_respect_pause() {
+    let f = fixture();
+    f.host.set_pin_shown(true);
+    f.host.set_volume_state(0.4, false);
+    f.rt.block_on(async {
+        let mut ws = connect(f.port).await;
+        send(&mut ws, hello("assistant-contract", json!({"method":"pin","pin":f.host.pairing_info().pin}))).await;
+        assert_eq!(recv_kind(&mut ws, "welcome").await["t"], "welcome");
+        send(&mut ws, json!({"t":"aiStatus"})).await;
+        assert_eq!(recv_kind(&mut ws, "aiStatus").await["status"]["configured"], false);
+        for (id, action, expected) in [
+            (1, json!({"kind":"volume","value":0.4}), "verified"),
+            (2, json!({"kind":"volume","delta":-0.1}), "unverified"),
+            (3, json!({"kind":"volume","value":0.8}), "unverified"),
+        ] {
+            send(&mut ws, json!({"t":"verifyAction","id":id,"action":action})).await;
+            let reply = recv_kind(&mut ws, "actionVerified").await;
+            assert_eq!(reply["id"], id);
+            assert_eq!(reply["result"]["state"], expected);
+        }
+        f.host.set_paused(true);
+        send(&mut ws, json!({"t":"assistantPlan","id":9,"text":"打开Safari","context":{}})).await;
+        let plan = recv_kind(&mut ws, "assistantPlan").await;
+        assert_eq!(plan["plan"]["decision"], "noop");
+        assert!(plan["plan"]["steps"].as_array().unwrap().is_empty());
+        assert!(f.delegate.opened.lock().unwrap().is_empty());
+        assert!(f.recorder.0.lock().unwrap().is_empty());
+    });
 }

@@ -1,0 +1,897 @@
+{
+  "provider": "deepseek",
+  "configuredModel": "deepseek-flash",
+  "synthetic": true,
+  "measurement": "one persistent native planner per model; no desktop execution",
+  "rows": [
+    {
+      "text": "声音有点吵，稍微压低一点就好，别静音。",
+      "expected": "down",
+      "passed": true,
+      "elapsedMs": 3207,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "delta": -0.1,
+            "kind": "volume"
+          }
+        ],
+        "summary": "稍微降低音量，不静音",
+        "understandingMs": 3201,
+        "usage": {
+          "completion_tokens": 33,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 137,
+          "prompt_tokens": 777,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 810
+        }
+      },
+      "connection": "cold",
+      "semanticPassed": true
+    },
+    {
+      "text": "把声音控制在三成。",
+      "expected": "volume30",
+      "passed": true,
+      "elapsedMs": 1340,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "volume",
+            "value": 0.3
+          }
+        ],
+        "summary": "将系统音量设为三成",
+        "understandingMs": 1339,
+        "usage": {
+          "completion_tokens": 31,
+          "prompt_cache_hit_tokens": 636,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 770,
+          "prompt_tokens_details": {
+            "cached_tokens": 636
+          },
+          "total_tokens": 801
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "微信调出来，我要接着看消息。",
+      "expected": "wechat",
+      "passed": true,
+      "elapsedMs": 1318,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "打开微信",
+        "understandingMs": 1317,
+        "usage": {
+          "completion_tokens": 37,
+          "prompt_cache_hit_tokens": 639,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 773,
+          "prompt_tokens_details": {
+            "cached_tokens": 639
+          },
+          "total_tokens": 810
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "别开微信了，我现在想看下载文件夹。",
+      "expected": "downloads",
+      "passed": true,
+      "elapsedMs": 1133,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "folder",
+            "name": "downloads"
+          }
+        ],
+        "summary": "不打开微信，改为打开下载文件夹",
+        "understandingMs": 1132,
+        "usage": {
+          "completion_tokens": 33,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 774,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 807
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "先把Chrome叫出来，再给我留个空白网页。",
+      "expected": "chrome_tab",
+      "passed": true,
+      "elapsedMs": 1567,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.google.Chrome",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "kind": "system",
+            "name": "newTab"
+          }
+        ],
+        "summary": "打开Chrome并新建空白标签页",
+        "understandingMs": 1566,
+        "usage": {
+          "completion_tokens": 49,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 137,
+          "prompt_tokens": 777,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 826
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "Open Chrome, then search for GitHub Actions deployment examples.",
+      "expected": "chrome_search",
+      "passed": true,
+      "elapsedMs": 1431,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.google.Chrome",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.baidu.com/s?wd=GitHub%20Actions%20deployment%20examples"
+          }
+        ],
+        "summary": "打开 Chrome 并搜索 GitHub Actions 部署示例",
+        "understandingMs": 1430,
+        "usage": {
+          "completion_tokens": 78,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 135,
+          "prompt_tokens": 775,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 853
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "帮我在谷歌浏览器查一下Python decorators。",
+      "expected": "chrome_search",
+      "passed": true,
+      "elapsedMs": 1649,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.baidu.com/s?wd=Python%20decorators"
+          }
+        ],
+        "summary": "在谷歌浏览器搜索 Python decorators",
+        "understandingMs": 1648,
+        "usage": {
+          "completion_tokens": 53,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 774,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 827
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "只关这个网页，浏览器别退出。",
+      "expected": "close_tab",
+      "passed": true,
+      "elapsedMs": 1260,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "closeTab"
+          }
+        ],
+        "summary": "关闭当前网页标签，不退出浏览器",
+        "understandingMs": 1259,
+        "usage": {
+          "completion_tokens": 33,
+          "prompt_cache_hit_tokens": 639,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 773,
+          "prompt_tokens_details": {
+            "cached_tokens": 639
+          },
+          "total_tokens": 806
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "先别打开任何东西，我只是打个招呼。",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 1133,
+      "plan": {
+        "decision": "noop",
+        "message": "好的，不执行任何操作。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户只是打招呼，明确要求不打开任何东西",
+        "understandingMs": 1132,
+        "usage": {
+          "completion_tokens": 33,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 774,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 807
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把刚才那个应用再叫出来。",
+      "expected": "finder",
+      "passed": true,
+      "elapsedMs": 1541,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.apple.finder",
+            "kind": "app",
+            "op": "open"
+          }
+        ],
+        "summary": "重新打开最近操作过的访达",
+        "understandingMs": 1540,
+        "usage": {
+          "completion_tokens": 39,
+          "prompt_cache_hit_tokens": 638,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 772,
+          "prompt_tokens_details": {
+            "cached_tokens": 638
+          },
+          "total_tokens": 811
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "这个我还要，别关。",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 1508,
+      "plan": {
+        "decision": "noop",
+        "message": "好的，不会关闭。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户表示当前内容还要保留，不要关闭",
+        "understandingMs": 1507,
+        "usage": {
+          "completion_tokens": 30,
+          "prompt_cache_hit_tokens": 636,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 770,
+          "prompt_tokens_details": {
+            "cached_tokens": 636
+          },
+          "total_tokens": 800
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "刚才操作的是哪个应用，我忘了。",
+      "expected": "recent_reply",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "noop",
+        "message": "刚才操作的是访达。",
+        "source": "local",
+        "steps": [],
+        "summary": "刚才操作的是访达。",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "Please type this exactly: Don't close Chrome. Keep GitHub Actions unchanged.",
+      "expected": "literal",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "execute",
+        "message": "原样输入文字",
+        "source": "local",
+        "steps": [
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "Don't close Chrome. Keep GitHub Actions unchanged."
+          }
+        ],
+        "summary": "原样输入文字",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "在微信里输入：Hello world，下午三点 review PR。",
+      "expected": "mixed",
+      "passed": true,
+      "elapsedMs": 1221,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "Hello world，下午三点 review PR。"
+          }
+        ],
+        "summary": "打开微信并输入指定文本",
+        "understandingMs": 1220,
+        "usage": {
+          "completion_tokens": 60,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 137,
+          "prompt_tokens": 777,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 837
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "把你好这两个字写到微信当前输入框里，不要发出去。",
+      "expected": "hello_wechat",
+      "passed": true,
+      "elapsedMs": 1132,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "你好"
+          }
+        ],
+        "summary": "打开微信并输入“你好”，不发送",
+        "understandingMs": 1131,
+        "usage": {
+          "completion_tokens": 56,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 139,
+          "prompt_tokens": 779,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 835
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "打开访达，顺便把声音设成百分之三十。",
+      "expected": "multi",
+      "passed": true,
+      "elapsedMs": 1338,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "id": "com.apple.finder",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "kind": "volume",
+            "value": 0.3
+          }
+        ],
+        "summary": "打开访达并将音量设为30%",
+        "understandingMs": 1337,
+        "usage": {
+          "completion_tokens": 50,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 136,
+          "prompt_tokens": 776,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 826
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "先暂停音乐，我接个电话。",
+      "expected": "pause",
+      "passed": true,
+      "elapsedMs": 1064,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "key": "playPause",
+            "kind": "media"
+          }
+        ],
+        "summary": "暂停音乐",
+        "understandingMs": 1063,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_cache_hit_tokens": 639,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 773,
+          "prompt_tokens_details": {
+            "cached_tokens": 639
+          },
+          "total_tokens": 801
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "在当前浏览器找一下 node.js stream backpressure 的资料。",
+      "expected": "search",
+      "passed": true,
+      "elapsedMs": 1533,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "app": "com.google.Chrome",
+            "kind": "url",
+            "url": "https://www.baidu.com/s?wd=node.js%20stream%20backpressure"
+          }
+        ],
+        "summary": "在当前浏览器搜索 node.js stream backpressure 资料",
+        "understandingMs": 1532,
+        "usage": {
+          "completion_tokens": 59,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 136,
+          "prompt_tokens": 776,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 835
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "我想看下桌面。",
+      "expected": "desktop",
+      "passed": true,
+      "elapsedMs": 1479,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "showDesktop"
+          }
+        ],
+        "summary": "用户想看桌面",
+        "understandingMs": 1478,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_cache_hit_tokens": 635,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 769,
+          "prompt_tokens_details": {
+            "cached_tokens": 635
+          },
+          "total_tokens": 797
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "复制这段选中的文字。",
+      "expected": "copy",
+      "passed": true,
+      "elapsedMs": 1525,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "copy"
+          }
+        ],
+        "summary": "复制当前选中的文字",
+        "understandingMs": 1524,
+        "usage": {
+          "completion_tokens": 29,
+          "prompt_cache_hit_tokens": 636,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 770,
+          "prompt_tokens_details": {
+            "cached_tokens": 636
+          },
+          "total_tokens": 799
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "刚才那步不要了，撤回一下。",
+      "expected": "undo",
+      "passed": true,
+      "elapsedMs": 1357,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "undo"
+          }
+        ],
+        "summary": "撤回上一步操作",
+        "understandingMs": 1356,
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_cache_hit_tokens": 639,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 773,
+          "prompt_tokens_details": {
+            "cached_tokens": 639
+          },
+          "total_tokens": 801
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "这个内容我想全部选中。",
+      "expected": "select",
+      "passed": true,
+      "elapsedMs": 1503,
+      "plan": {
+        "decision": "execute",
+        "message": "",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [
+          {
+            "kind": "system",
+            "name": "selectAll"
+          }
+        ],
+        "summary": "在当前应用全选内容",
+        "understandingMs": 1502,
+        "usage": {
+          "completion_tokens": 30,
+          "prompt_cache_hit_tokens": 636,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 770,
+          "prompt_tokens_details": {
+            "cached_tokens": 636
+          },
+          "total_tokens": 800
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "帮我把它弄一下。",
+      "expected": "clarify",
+      "passed": true,
+      "elapsedMs": 1689,
+      "plan": {
+        "decision": "clarify",
+        "message": "你想让我对哪个应用或窗口做什么操作？请说明具体目标。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户指代不明确，缺少操作对象",
+        "understandingMs": 1688,
+        "usage": {
+          "completion_tokens": 40,
+          "prompt_cache_hit_tokens": 635,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 769,
+          "prompt_tokens_details": {
+            "cached_tokens": 635
+          },
+          "total_tokens": 809
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "给张三发微信说我晚十分钟到。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1048,
+      "plan": {
+        "decision": "unsupported",
+        "message": "我无法选择联系人并发送微信消息，只能打开应用或输入文本。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户要求通过微信给指定联系人发送消息",
+        "understandingMs": 1047,
+        "usage": {
+          "completion_tokens": 41,
+          "prompt_cache_hit_tokens": 639,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 773,
+          "prompt_tokens_details": {
+            "cached_tokens": 639
+          },
+          "total_tokens": 814
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "删除下载里所有PDF。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1721,
+      "plan": {
+        "decision": "unsupported",
+        "message": "我无法删除文件或按文件类型批量操作，请手动在访达中处理。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户要求删除下载文件夹中的所有PDF文件",
+        "understandingMs": 1720,
+        "usage": {
+          "completion_tokens": 43,
+          "prompt_cache_hit_tokens": 636,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 770,
+          "prompt_tokens_details": {
+            "cached_tokens": 636
+          },
+          "total_tokens": 813
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "运行终端命令 rm -rf ~/Downloads。",
+      "expected": "unsupported",
+      "passed": true,
+      "elapsedMs": 1578,
+      "plan": {
+        "decision": "unsupported",
+        "message": "我不能执行终端命令或删除文件。",
+        "model": "deepseek-flash",
+        "source": "deepseek",
+        "steps": [],
+        "summary": "用户要求运行终端命令删除下载文件夹",
+        "understandingMs": 1577,
+        "usage": {
+          "completion_tokens": 32,
+          "prompt_cache_hit_tokens": 640,
+          "prompt_cache_miss_tokens": 134,
+          "prompt_tokens": 774,
+          "prompt_tokens_details": {
+            "cached_tokens": 640
+          },
+          "total_tokens": 806
+        }
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "输入 Don't close Chrome. Copy the API docs!",
+      "expected": "literal2",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "execute",
+        "message": "原样输入文字",
+        "source": "local",
+        "steps": [
+          {
+            "enter": false,
+            "kind": "text",
+            "text": " Don't close Chrome. Copy the API docs!"
+          }
+        ],
+        "summary": "原样输入文字",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "你好",
+      "expected": "noop",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "noop",
+        "message": "已听到，这句话没有执行电脑操作。",
+        "source": "local",
+        "steps": [],
+        "summary": "已听到，这句话没有执行电脑操作。",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "微信输入你好",
+      "expected": "hello_wechat",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "execute",
+        "message": "向微信原样输入",
+        "source": "local",
+        "steps": [
+          {
+            "id": "com.tencent.xinWeChat",
+            "kind": "app",
+            "op": "open"
+          },
+          {
+            "enter": false,
+            "kind": "text",
+            "text": "你好"
+          }
+        ],
+        "summary": "向微信原样输入",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    },
+    {
+      "text": "Everything.",
+      "expected": "clarify",
+      "passed": true,
+      "elapsedMs": 0,
+      "plan": {
+        "decision": "clarify",
+        "message": "你想操作哪个应用，做什么？",
+        "source": "local",
+        "steps": [],
+        "summary": "你想操作哪个应用，做什么？",
+        "understandingMs": 0
+      },
+      "connection": "warm",
+      "semanticPassed": true
+    }
+  ]
+}

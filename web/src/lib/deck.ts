@@ -48,6 +48,10 @@ export function actionProblem(action: Action, depth = 0): string {
       }
       return ''
     }
+    case 'folder':
+      return ['downloads', 'desktop', 'documents', 'home'].includes(action.name) ? '' : '文件夹无效。'
+    case 'volume':
+      return (action.value === undefined || Number.isFinite(action.value) && action.value >= 0 && action.value <= 1) && (action.delta === undefined || Number.isFinite(action.delta) && action.delta >= -1 && action.delta <= 1) ? '' : '音量数值无效。'
     case 'media':
     case 'system':
       return ''

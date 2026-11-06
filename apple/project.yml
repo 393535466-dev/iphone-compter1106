@@ -49,7 +49,7 @@ targets:
         basedOnDependencyAnalysis: false
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: app.cmdpalm.mac
+        PRODUCT_BUNDLE_IDENTIFIER: dev.iphonecomputer.CmdPalmAI
         PRODUCT_NAME: CmdPalm
         INFOPLIST_FILE: CmdPalm/Info.plist
         CODE_SIGN_ENTITLEMENTS: CmdPalm/CmdPalm.entitlements
@@ -67,7 +67,7 @@ targets:
         OTHER_SWIFT_FLAGS: -Xcc -fmodule-map-file=$(SRCROOT)/Generated/cmdpalm_coreFFI.modulemap
         LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
         ENABLE_USER_SCRIPT_SANDBOXING: NO
-        CMDPALM_UPDATE_FEED: https://github.com/rahatsagor/CmdPalm/releases/latest/download/appcast.xml
+        CMDPALM_UPDATE_FEED: https://github.com/393535466-dev/iphone-compter1106/releases/latest/download/appcast.xml
         CMDPALM_UPDATE_KEY: ""
 
   CmdPalmTests:

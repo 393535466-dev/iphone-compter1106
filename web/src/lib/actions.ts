@@ -87,6 +87,10 @@ export function defaultAction(kind: Action['kind']): Action {
       return { kind: 'system', name: 'missionControl' }
     case 'media':
       return { kind: 'media', key: 'playPause' }
+    case 'volume':
+      return { kind: 'volume', value: 0.5 }
+    case 'folder':
+      return { kind: 'folder', name: 'downloads' }
     case 'app':
       return { kind: 'app', id: '', op: 'toggle' }
     case 'text':
@@ -125,6 +129,10 @@ export function describe(action: Action | null, labels: LabelMap, apps?: Map<str
       return SYSTEM[action.name]?.label ?? action.name
     case 'media':
       return MEDIA[action.key]?.label ?? action.key
+    case 'folder':
+      return '打开' + ({ downloads: '下载', desktop: '桌面', documents: '文档', home: '个人文件夹' }[action.name])
+    case 'volume':
+      return action.value !== undefined ? '音量 ' + Math.round(action.value * 100) + '%' : action.delta !== undefined ? '调整音量 ' + Math.round(action.delta * 100) + '%' : action.muted ? '静音' : '取消静音'
     case 'app':
       return `${APP_OPS[action.op ?? 'toggle']} ${apps?.get(action.id) ?? (action.id.split('.').pop() || 'app')}`
     case 'text':

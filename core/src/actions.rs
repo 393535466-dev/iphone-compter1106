@@ -205,13 +205,33 @@ pub(crate) fn execute(shared: &Shared, session: SessionId, action: &Action, dept
                 return Err(format!("Couldn't find the app “{id}” on the Mac."));
             }
         }
-        Action::Url { url } => {
+        Action::Folder { name } => {
+            settle(shared, session)?;
+            if !shared.delegate.open_folder(name.clone()) {
+                return Err("Cannot open the requested folder.".into());
+            }
+        }
+        Action::Volume { value, delta, muted } => {
+            settle(shared, session)?;
+            let target = if let Some(delta) = delta {
+                let current = shared.state().volume.ok_or("Cannot read the actual volume.")?;
+                Some((current.value + delta).clamp(0.0, 1.0))
+            } else {
+                *value
+            };
+            shared.delegate.set_volume(target, *muted);
+        }
+        Action::Url { url, app } => {
             let url = url.trim();
             if let Some(problem) = link_problem(url, shared.config().allow_shell) {
                 return Err(problem.into());
             }
             settle(shared, session)?;
-            if !shared.delegate.open_url(url.to_string()) {
+            let opened = match app {
+                Some(app) => shared.delegate.open_url_in_app(url.to_string(), app.clone()),
+                None => shared.delegate.open_url(url.to_string()),
+            };
+            if !opened {
                 return Err("The Mac couldn't open that link.".into());
             }
         }

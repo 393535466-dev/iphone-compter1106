@@ -172,6 +172,19 @@ pub enum Action {
     },
     Url {
         url: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        app: Option<String>,
+    },
+    Folder {
+        name: String,
+    },
+    Volume {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        value: Option<f32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        delta: Option<f32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        muted: Option<bool>,
     },
     System {
         name: SystemAction,
@@ -316,6 +329,25 @@ pub enum ClientMessage {
         text: String,
     },
     ClipboardGet,
+    AssistantPlan {
+        id: u32,
+        text: String,
+        #[serde(default)]
+        context: serde_json::Value,
+    },
+    AiStatus,
+    VerifyAction {
+        id: u32,
+        action: Action,
+        #[serde(default)]
+        prepare: bool,
+        #[serde(default)]
+        receipt: Option<String>,
+    },
+    VoicePrepare {
+        #[serde(default)]
+        locale: Option<String>,
+    },
     VoiceStart {
         #[serde(default)]
         locale: Option<String>,
@@ -438,6 +470,17 @@ pub enum VoiceState {
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "t", rename_all = "camelCase", rename_all_fields = "camelCase")]
 pub enum ServerMessage {
+    AssistantPlan {
+        id: u32,
+        plan: serde_json::Value,
+    },
+    AiStatus {
+        status: serde_json::Value,
+    },
+    ActionVerified {
+        id: u32,
+        result: serde_json::Value,
+    },
     Welcome {
         v: u32,
         host: HostInfo,

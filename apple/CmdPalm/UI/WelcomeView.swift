@@ -40,7 +40,7 @@ struct WelcomeView: View {
                 .frame(width: 96, height: 96)
             Text("Welcome to CmdPalm")
                 .font(.largeTitle.bold())
-            Text("Use your phone or iPad as a trackpad, keyboard and button deck for this Mac. Nothing to install on the phone, and nothing leaves your network.")
+            Text("Use your phone as a trackpad, keyboard and AI assistant. Remote input connects to this Mac. With AI enabled, instructions go to your model provider and voice goes to your selected recognizer.")
                 .font(.title3)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

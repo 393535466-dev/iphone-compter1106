@@ -699,6 +699,96 @@ impl Connection {
                 });
                 None
             }
+            ClientMessage::VerifyAction { id, action, prepare, receipt } => {
+                self.blocking(move |shared| {
+                    let result = if let Action::Volume { value, delta, muted } = &action {
+                        // A relative delta has no postcondition without the caller's prior value.
+                        let comparable = delta.is_none() && (value.is_some() || muted.is_some());
+                        let end = std::time::Instant::now() + std::time::Duration::from_millis(600);
+                        let verified = loop {
+                            let matches = comparable && shared.state().volume.as_ref().is_some_and(|actual| {
+                                value.is_none_or(|v| (actual.value-v).abs() < 0.015)
+                                    && muted.is_none_or(|m| actual.muted == m)
+                            });
+                            if matches || !comparable || std::time::Instant::now() >= end { break matches; }
+                            std::thread::sleep(std::time::Duration::from_millis(30));
+                        };
+                        serde_json::json!({"state":if verified {"verified"} else {"unverified"},"message":if verified {"已核对系统音量。"} else {"音量状态尚未确认，请核对。"}})
+                    } else {
+                        let mut request = serde_json::to_value(&action).unwrap_or_default();
+                        request["prepare"] = serde_json::json!(prepare);
+                        if let Some(receipt) = receipt.filter(|r| r.len() <= 100) { request["receipt"] = serde_json::json!(receipt); }
+                        serde_json::from_str(&shared.delegate.verify_action(request.to_string()))
+                            .unwrap_or_else(|_| serde_json::json!({"state":"unverified","message":"结果尚未确认。"}))
+                    };
+                    Some(ServerMessage::ActionVerified { id, result })
+                });
+                None
+            }
+            ClientMessage::AiStatus => {
+                self.blocking(|shared| {
+                    Some(ServerMessage::AiStatus {
+                        status: serde_json::from_str(&shared.delegate.ai_status())
+                            .unwrap_or_else(|_| serde_json::json!({"configured":false})),
+                    })
+                });
+                None
+            }
+            ClientMessage::AssistantPlan { id, text, context } => {
+                if text.trim().is_empty() || text.len() > 16_384 || context.to_string().len() > 2048 {
+                    return Some(ServerMessage::AssistantPlan {
+                        id,
+                        plan: serde_json::json!({
+                            "decision":"clarify","message":"指令为空或过长。","steps":[]
+                        }),
+                    });
+                }
+                self.blocking(move |shared| {
+                    let raw = shared.delegate.plan_instruction(text, context.to_string());
+                    let fallback =
+                        || serde_json::json!({"decision":"clarify","message":"任务计划无效，原话已保留。","steps":[]});
+                    let plan = if raw.len() <= 65_536 {
+                        serde_json::from_str::<serde_json::Value>(&raw)
+                            .ok()
+                            .filter(|p| {
+                                let decision = p["decision"].as_str().unwrap_or("");
+                                if !["execute", "clarify", "noop", "unsupported"].contains(&decision) {
+                                    return false;
+                                }
+                                if decision != "execute" {
+                                    return true;
+                                }
+                                let Some(steps) = p["steps"].as_array() else {
+                                    return false;
+                                };
+                                !steps.is_empty()
+                                    && steps.len() <= 8
+                                    && steps.iter().all(|s| {
+                                        let kind = s["kind"].as_str().unwrap_or("");
+                                        ["app", "text", "url", "folder", "system", "media", "volume"].contains(&kind)
+                                            && !(kind == "text" && s["enter"].as_bool() == Some(true))
+                                            && serde_json::from_value::<Action>(s.clone())
+                                                .ok()
+                                                .is_some_and(|action| validate_action(&action, 0).is_ok())
+                                    })
+                            })
+                            .unwrap_or_else(fallback)
+                    } else {
+                        fallback()
+                    };
+                    Some(ServerMessage::AssistantPlan { id, plan })
+                });
+                None
+            }
+            ClientMessage::VoicePrepare { locale } => {
+                if self.shared.config().voice_available {
+                    self.blocking(move |shared| {
+                        shared.delegate.prepare_voice(locale);
+                        None
+                    });
+                }
+                None
+            }
             ClientMessage::VoiceStart { locale } => {
                 if !self.shared.config().voice_available {
                     return Some(voice(
@@ -841,7 +931,13 @@ fn paused_reply(message: &ClientMessage) -> Option<Option<ServerMessage>> {
         | ClientMessage::SettingsSave { .. }
         | ClientMessage::SettingsList
         | ClientMessage::SettingsCopy { .. }
-        | ClientMessage::VoiceStop { .. } => None,
+        | ClientMessage::VoiceStop { .. }
+        | ClientMessage::AiStatus
+        | ClientMessage::VerifyAction { .. } => None,
+        ClientMessage::AssistantPlan { id, .. } => Some(Some(ServerMessage::AssistantPlan {
+            id: *id,
+            plan: serde_json::json!({"decision":"noop","message":PAUSED,"steps":[]}),
+        })),
         ClientMessage::Action { id, .. } => {
             Some(Some(ServerMessage::ActionResult { id: *id, ok: false, message: Some(PAUSED.into()) }))
         }
@@ -849,6 +945,7 @@ fn paused_reply(message: &ClientMessage) -> Option<Option<ServerMessage>> {
         | ClientMessage::Text { .. }
         | ClientMessage::ClipboardSet { .. }
         | ClientMessage::ClipboardGet => Some(Some(notice(NoticeLevel::Warning, "paused", PAUSED))),
+        ClientMessage::VoicePrepare { .. } => Some(None),
         ClientMessage::VoiceStart { .. } => Some(Some(voice(VoiceState::Unavailable, Some(PAUSED)))),
         ClientMessage::Key { .. }
         | ClientMessage::Tap { .. }

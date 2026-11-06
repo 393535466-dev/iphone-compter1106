@@ -1,0 +1,88 @@
+{
+  "cold": [
+    {
+      "name": "hello",
+      "synthetic": true,
+      "expected": "你好",
+      "result": {
+        "audioMs": 926.375,
+        "error": null,
+        "finishMs": 3233.4269285202026,
+        "firstFinalMs": 4334.771990776062,
+        "firstTextMs": 4326.20096206665,
+        "locale": "zh-CN",
+        "timedOut": false,
+        "transcript": "你好。"
+      }
+    },
+    {
+      "name": "mixed",
+      "synthetic": true,
+      "expected": "帮我打开 Google Chrome ，搜索 How to configure a GitHub Actions workflow ，然后用英文总结结果。",
+      "result": {
+        "audioMs": 6976.5625,
+        "error": null,
+        "finishMs": 771.7440128326416,
+        "firstFinalMs": 8885.61499118805,
+        "firstTextMs": 2603.0030250549316,
+        "locale": "auto",
+        "timedOut": false,
+        "transcript": "帮我打开Google Chrome，搜索how to configure a GitHub Actions workflow，然后用英文总结结果。"
+      }
+    },
+    {
+      "name": "long-english",
+      "synthetic": true,
+      "expected": "Tomorrow we will review the GitHub Actions workflow, update the README, and run npm test before deploying to the staging environment. Please keep all English words exactly as spoken.",
+      "result": {
+        "audioMs": 10704.3125,
+        "error": null,
+        "finishMs": 1152.204990386963,
+        "firstFinalMs": 13684.32605266571,
+        "firstTextMs": 4574.547052383423,
+        "locale": "en-US",
+        "timedOut": false,
+        "transcript": "Tomorrow we will review the GitHub Actions workflow, update the README, and run npm test before deploying to the staging environment. Please keep all English words exactly as spoken."
+      }
+    }
+  ],
+  "preparedHello": [
+    {
+      "audioMs": 926.375,
+      "error": null,
+      "finishMs": 430.17101287841797,
+      "firstFinalMs": 4517.717003822327,
+      "firstTextMs": 4278.4940004348755,
+      "locale": "zh-CN",
+      "preparationMs": 3010.02299785614,
+      "readyMs": 3318.108916282654,
+      "timedOut": false,
+      "transcript": "你好。"
+    },
+    {
+      "audioMs": 926.375,
+      "error": null,
+      "finishMs": 430.3849935531616,
+      "firstFinalMs": 4488.438963890076,
+      "firstTextMs": 4118.806958198547,
+      "locale": "zh-CN",
+      "preparationMs": 3005.1369667053223,
+      "readyMs": 3005.7809352874756,
+      "timedOut": false,
+      "transcript": "你好。"
+    },
+    {
+      "audioMs": 926.375,
+      "error": null,
+      "finishMs": 401.7469882965088,
+      "firstFinalMs": 4498.564958572388,
+      "firstTextMs": 4201.920986175537,
+      "locale": "zh-CN",
+      "preparationMs": 3005.52499294281,
+      "readyMs": 3006.1429738998413,
+      "timedOut": false,
+      "transcript": "你好。"
+    }
+  ],
+  "note": "Synthetic audio only. Prepared runs wait 3 seconds before activation. firstTextMs includes preparation; finishMs measures after stop. No iPhone microphone or cellular-path accuracy claim."
+}

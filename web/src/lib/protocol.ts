@@ -109,7 +109,9 @@ export type Action =
   | { kind: 'text'; text: string; enter?: boolean }
   | { kind: 'media'; key: MediaKey }
   | { kind: 'app'; id: string; op?: AppOp }
-  | { kind: 'url'; url: string }
+  | { kind: 'url'; url: string; app?: string }
+  | { kind: 'folder'; name: 'downloads' | 'desktop' | 'documents' | 'home' }
+  | { kind: 'volume'; value?: number; delta?: number; muted?: boolean }
   | { kind: 'system'; name: SystemAction }
   | { kind: 'shortcut'; name: string }
   | { kind: 'shell'; command: string }
@@ -184,6 +186,10 @@ export type ClientMessage =
   | { t: 'volume'; value?: number; muted?: boolean }
   | { t: 'clipboardSet'; text: string }
   | { t: 'clipboardGet' }
+  | { t: 'assistantPlan'; id: number; text: string; context?: Record<string, unknown> }
+  | { t: 'aiStatus' }
+  | { t: 'verifyAction'; id: number; action: Action; prepare?: boolean; receipt?: string }
+  | { t: 'voicePrepare'; locale?: string }
   | { t: 'voiceStart'; locale?: string }
   | { t: 'voiceStop'; cancel?: boolean }
   | ({ t: 'settingsSave' } & SavedSettings)
@@ -262,6 +268,9 @@ export type ServerMessage =
   | { t: 'notice'; level: 'info' | 'warning' | 'error'; code: string; message: string }
   | { t: 'clipboard'; text: string }
   | { t: 'voice'; state: VoiceState; text?: string; final: boolean; message?: string }
+  | { t: 'actionVerified'; id: number; result: { state: 'verified' | 'unverified'; message?: string } }
+  | { t: 'assistantPlan'; id: number; plan: unknown }
+  | { t: 'aiStatus'; status: { configured: boolean; provider?: string; model?: string; speechProvider?: string } }
   | { t: 'actionResult'; id?: number; ok: boolean; message?: string }
   | { t: 'settingsList'; devices: SettingsSource[] }
   | ({ t: 'settings' } & SavedSettings)

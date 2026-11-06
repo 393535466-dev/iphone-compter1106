@@ -35,11 +35,11 @@ enum SystemInfo {
         }
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSHomeDirectory()).appending(path: "Library/Application Support")
-        return base.appending(path: "CmdPalm", directoryHint: .isDirectory)
+        return base.appending(path: "CmdPalm AI", directoryHint: .isDirectory)
     }
 
     static var logDirectory: URL {
-        URL(fileURLWithPath: NSHomeDirectory()).appending(path: "Library/Logs/CmdPalm", directoryHint: .isDirectory)
+        URL(fileURLWithPath: NSHomeDirectory()).appending(path: "Library/Logs/CmdPalm AI", directoryHint: .isDirectory)
     }
 
     static var logFile: URL { logDirectory.appending(path: "CmdPalm.log") }

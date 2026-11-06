@@ -24,6 +24,8 @@ fi
 
 # Xcode sets these for its own toolchain; they confuse rustc's linker.
 unset SDKROOT MACOSX_DEPLOYMENT_TARGET IPHONEOS_DEPLOYMENT_TARGET LD LDFLAGS CC CXX
+# Keep SDK selection local to this build, without changing xcode-select.
+if [[ -n "${CMDPALM_BUILD_SDK:-}" ]]; then export SDKROOT="$CMDPALM_BUILD_SDK"; fi
 export MACOSX_DEPLOYMENT_TARGET=15.0
 # Xcode also puts its toolchain's clang first on PATH. That clang has no
 # default SDK, so C code in dependencies such as ring can't find the system
