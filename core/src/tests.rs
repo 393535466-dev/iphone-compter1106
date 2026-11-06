@@ -29,6 +29,7 @@ struct MockDelegate {
     slow_stale_apps: std::sync::atomic::AtomicBool,
     /// The clipboard takes a while to accept pasted text.
     slow_paste: std::sync::atomic::AtomicBool,
+    reject_app: std::sync::atomic::AtomicBool,
 }
 
 impl MockDelegate {
@@ -66,6 +67,9 @@ impl HostDelegate for MockDelegate {
     }
     fn app_action(&self, id: String, _op: AppOp) -> bool {
         self.call(format!("app {id}"));
+        if self.reject_app.load(std::sync::atomic::Ordering::SeqCst) {
+            return false;
+        }
         self.opened.lock().unwrap().push(id);
         true
     }
@@ -95,7 +99,14 @@ impl HostDelegate for MockDelegate {
     fn plan_instruction(&self, _text: String, _context: String) -> String {
         r#"{"decision":"noop","message":"Development host: AI is not configured.","steps":[]}"#.into()
     }
-    fn verify_action(&self, _action: String) -> String {
+    fn verify_action(&self, action: String) -> String {
+        let action: Value = serde_json::from_str(&action).unwrap();
+        if action["kind"] == "app" {
+            let id = action["id"].as_str().unwrap();
+            self.call(format!("verify {id}"));
+            assert!(self.opened.lock().unwrap().iter().any(|opened| opened == id), "read-back must follow execution");
+            return r#"{"state":"verified","message":"Test app is active"}"#.into();
+        }
         r#"{"state":"unverified","message":"Development host"}"#.into()
     }
     fn ai_status(&self) -> String {
@@ -913,5 +924,45 @@ fn assistant_readbacks_require_real_postconditions_and_respect_pause() {
         assert!(plan["plan"]["steps"].as_array().unwrap().is_empty());
         assert!(f.delegate.opened.lock().unwrap().is_empty());
         assert!(f.recorder.0.lock().unwrap().is_empty());
+    });
+}
+
+#[test]
+fn app_execution_returns_opt_in_readback_in_the_same_receipt() {
+    let f = fixture();
+    f.host.set_pin_shown(true);
+    f.rt.block_on(async {
+        let mut ws = connect(f.port).await;
+        send(&mut ws, hello("inline-check", json!({"method":"pin","pin":f.host.pairing_info().pin}))).await;
+        recv_kind(&mut ws, "welcome").await;
+        send(&mut ws, json!({"t":"aiStatus"})).await;
+        assert_eq!(recv_kind(&mut ws, "aiStatus").await["status"]["checkedAppActions"], true);
+        let action = json!({"kind":"app","id":"com.apple.Safari","op":"open"});
+        send(&mut ws, json!({"t":"action","id":1,"action":action})).await;
+        let legacy = recv_kind(&mut ws, "actionResult").await;
+        assert_eq!(legacy["ok"], true);
+        assert!(legacy.get("verification").is_none(), "manual and older clients keep their original receipt");
+        send(&mut ws, json!({"t":"action","id":2,"action":action,"verify":true})).await;
+        let checked = recv_kind(&mut ws, "actionResult").await;
+        assert_eq!(checked["id"], 2);
+        assert_eq!(checked["ok"], true);
+        assert_eq!(checked["verification"]["state"], "verified");
+        let calls = f.delegate.calls.lock().unwrap().iter().map(|(name, _)| name.clone()).collect::<Vec<_>>();
+        assert_eq!(calls, ["app com.apple.Safari", "app com.apple.Safari", "verify com.apple.Safari"]);
+        f.delegate.reject_app.store(true, std::sync::atomic::Ordering::SeqCst);
+        send(&mut ws, json!({"t":"action","id":3,"action":action,"verify":true})).await;
+        let failed = recv_kind(&mut ws, "actionResult").await;
+        assert_eq!(failed["ok"], false);
+        assert!(failed.get("verification").is_none());
+        f.host.set_paused(true);
+        send(&mut ws, json!({"t":"action","id":4,"action":action,"verify":true})).await;
+        let paused = recv_kind(&mut ws, "actionResult").await;
+        assert_eq!(paused["ok"], false);
+        assert!(paused.get("verification").is_none());
+        assert_eq!(
+            f.delegate.calls.lock().unwrap().len(),
+            4,
+            "pause and failed opens never trigger a successful read-back"
+        );
     });
 }

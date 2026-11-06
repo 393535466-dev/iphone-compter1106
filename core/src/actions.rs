@@ -16,6 +16,7 @@ use crate::protocol::{Action, MouseButton, PressOp, ServerMessage, SystemAction}
 pub(crate) struct Job {
     pub action: Action,
     pub id: Option<u32>,
+    pub verify: bool,
 }
 
 /// How long the pasted text stays on the clipboard before it is restored.
@@ -40,15 +41,30 @@ pub(crate) async fn worker(shared: Arc<Shared>, session: SessionId, mut jobs: mp
     while let Some(job) = jobs.recv().await {
         let task_shared = shared.clone();
         let action = job.action;
-        let result = tokio::task::spawn_blocking(move || execute(&task_shared, session, &action, 0))
-            .await
-            .unwrap_or_else(|_| Err("The action crashed.".into()));
+        let result = tokio::task::spawn_blocking(move || {
+            execute(&task_shared, session, &action, 0)?;
+            // Same worker and native read-back, without another phone round trip.
+            // Keep this opt-in limited to apps; text still uses its prior-field receipt.
+            if job.verify && matches!(action, Action::App { .. }) {
+                if task_shared.should_stop(session) {
+                    return Err(STOPPED.into());
+                }
+                let request = serde_json::to_string(&action).unwrap_or_default();
+                let result = serde_json::from_str(&task_shared.delegate.verify_action(request))
+                    .unwrap_or_else(|_| serde_json::json!({"state":"unverified","message":"应用结果尚未确认。"}));
+                Ok(Some(result))
+            } else {
+                Ok(None)
+            }
+        })
+        .await
+        .unwrap_or_else(|_| Err("The action crashed.".into()));
         if job.id.is_some() || result.is_err() {
-            let (ok, message) = match result {
-                Ok(()) => (true, None),
-                Err(message) => (false, Some(message)),
+            let (ok, message, verification) = match result {
+                Ok(verification) => (true, None, verification),
+                Err(message) => (false, Some(message), None),
             };
-            shared.send_to(session, ServerMessage::ActionResult { id: job.id, ok, message });
+            shared.send_to(session, ServerMessage::ActionResult { id: job.id, ok, message, verification });
         }
     }
 }

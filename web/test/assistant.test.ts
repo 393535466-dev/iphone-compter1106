@@ -75,3 +75,36 @@ describe('assistant execution contract', () => {
     expect(bridge.run).not.toHaveBeenCalled()
   })
 })
+
+
+describe('one receipt for application execution and read-back', () => {
+  function enable() { bridge.handlers.forEach(h => h({ t: 'aiStatus', status: { configured: true, checkedAppActions: true } })) }
+  const app = { kind: 'app', id: 'com.apple.finder', op: 'open' }
+  it('removes the extra network request while retaining verified completion', async () => {
+    enable()
+    bridge.run.mockResolvedValue({ ok: true, verification: { state: 'verified', message: '应用已切到前台。' } })
+    const task = lib.perform('打开访达')
+    reply('assistantPlan', { decision: 'execute', steps: [app] })
+    await task
+    expect(bridge.run).toHaveBeenCalledExactlyOnceWith(app, { verify: true })
+    expect(bridge.sent.filter(m => m.t === 'verifyAction')).toHaveLength(0)
+    expect(lib.assistant.steps[0]?.state).toBe('verified')
+    expect(lib.assistant.recentApp).toBe(app.id)
+  })
+  it.each([undefined, { state: 'unverified' }])('stops dependent text if the inline read-back is absent or unverified: %s', async verification => {
+    enable()
+    bridge.run.mockResolvedValue({ ok: true, verification })
+    const task = lib.perform('打开访达输入你好')
+    reply('assistantPlan', { decision: 'execute', steps: [app, { kind: 'text', text: '你好' }] })
+    await task
+    expect(bridge.run).toHaveBeenCalledTimes(1)
+    expect(bridge.sent.filter(m => m.t === 'verifyAction')).toHaveLength(0)
+    expect(lib.assistant.phase).toBe('needs_check')
+  })
+  it('does not reuse a capability from a previous connection', () => {
+    enable()
+    expect(lib.assistant.checkedAppActions).toBe(true)
+    bridge.handlers.forEach(h => h({ t: 'welcome' }))
+    expect(lib.assistant.checkedAppActions).toBe(false)
+  })
+})

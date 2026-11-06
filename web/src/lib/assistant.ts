@@ -11,12 +11,13 @@ export const assistant = reactive({
   phase: 'idle' as 'idle' | 'understanding' | 'executing' | 'done' | 'needs_check' | 'stopped',
   question: '', original: '', message: '', instruction: '', summary: '', model: '', understandingMs: 0, executionMs: 0,
   steps: [] as { action: Action; state: 'pending' | 'running' | 'verified' | 'unverified'; message: string }[],
-  configured: false, speechProvider: 'apple', recentApp: '', recentAt: 0,
+  configured: false, checkedAppActions: false, speechProvider: 'apple', recentApp: '', recentAt: 0,
 })
 onMessage((m) => {
-  if (m.t === 'welcome') send({ t: 'aiStatus' })
+  if (m.t === 'welcome') { assistant.checkedAppActions = false; send({ t: 'aiStatus' }) }
   if (m.t === 'aiStatus') {
     assistant.configured = m.status.configured
+    assistant.checkedAppActions = m.status.checkedAppActions === true
     assistant.speechProvider = m.status.speechProvider ?? 'apple'
     if (assistant.speechProvider === 'aliyun' && state.features.voice) send({ t: 'voicePrepare', locale: localStorage.getItem('cmdpalm-ai-language') ?? 'auto' })
     assistant.model = m.status.model ?? ''
@@ -122,14 +123,17 @@ export async function perform(text: string, answers?: { instruction: string; ans
         } catch { /* Typing still uses upstream behavior; inability to observe is not a pre-input gate. */ }
         if (run !== generation) return
       }
-      const result = await runAction(step.action)
+      const inlineCheck = step.action.kind === 'app' && assistant.checkedAppActions
+      const result = inlineCheck ? await runAction(step.action, { verify: true }) : await runAction(step.action)
       if (run !== generation) return
       if (!result.ok) throw new Error(result.message ?? 'Mac 未确认操作结果。')
       let observedAction = step.action
       if (step.action.kind === 'volume' && step.action.delta !== undefined && oldVolume !== undefined) {
         observedAction = { kind: 'volume', value: Math.max(0, Math.min(1, oldVolume + step.action.delta)), muted: step.action.muted }
       }
-      const resultState = await verify(observedAction, receipt)
+      const resultState = inlineCheck
+        ? result.verification ?? { state: 'unverified', message: '应用状态未确认，请核对 Mac。' }
+        : await verify(observedAction, receipt)
       if (run !== generation) return
       step.state = resultState.state === 'verified' ? 'verified' : 'unverified'
       step.message = resultState.message ?? ''

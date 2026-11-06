@@ -178,7 +178,7 @@ export type ClientMessage =
   | { t: 'media'; key: MediaKey; op: PressOp }
   | { t: 'text'; text: string; mode?: TextMode }
   | { t: 'edit'; delete: number; insert: string }
-  | { t: 'action'; action: Action; id?: number }
+  | { t: 'action'; action: Action; id?: number; verify?: boolean }
   | { t: 'release' }
   | { t: 'apps' }
   | { t: 'appAction'; id: string; op: AppOp }
@@ -270,8 +270,8 @@ export type ServerMessage =
   | { t: 'voice'; state: VoiceState; text?: string; final: boolean; message?: string }
   | { t: 'actionVerified'; id: number; result: { state: 'verified' | 'unverified'; message?: string } }
   | { t: 'assistantPlan'; id: number; plan: unknown }
-  | { t: 'aiStatus'; status: { configured: boolean; provider?: string; model?: string; speechProvider?: string } }
-  | { t: 'actionResult'; id?: number; ok: boolean; message?: string }
+  | { t: 'aiStatus'; status: { configured: boolean; provider?: string; model?: string; speechProvider?: string; checkedAppActions?: boolean } }
+  | { t: 'actionResult'; id?: number; ok: boolean; message?: string; verification?: { state: string; message?: string } }
   | { t: 'settingsList'; devices: SettingsSource[] }
   | ({ t: 'settings' } & SavedSettings)
   /** `reconnect`: the Mac stopped or restarted its server, so retry with the token. */

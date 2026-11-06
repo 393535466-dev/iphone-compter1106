@@ -308,6 +308,9 @@ pub enum ClientMessage {
         action: Action,
         #[serde(default)]
         id: Option<u32>,
+        /// App actions may return their read-back with the execution receipt.
+        #[serde(default)]
+        verify: bool,
     },
     /// Release every key and button this device holds.
     Release,
@@ -554,6 +557,8 @@ pub enum ServerMessage {
         ok: bool,
         #[serde(skip_serializing_if = "Option::is_none")]
         message: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        verification: Option<serde_json::Value>,
     },
     SettingsList {
         devices: Vec<SettingsSource>,

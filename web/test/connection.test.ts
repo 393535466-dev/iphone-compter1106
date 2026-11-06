@@ -348,3 +348,15 @@ describe('sending', () => {
     expect(conn.send({ t: 'key', code: 0, down: true })).toBe(true)
   })
 })
+
+
+it('delivers opt-in app read-back with the original action receipt', async () => {
+  const socket = connected()
+  const action = { kind: 'app' as const, id: 'com.apple.Safari', op: 'open' as const }
+  const task = conn.runAction(action, { verify: true })
+  const sent = socket.sent.at(-1) as { id: number; verify: boolean }
+  expect(sent.verify).toBe(true)
+  const verification = { state: 'verified', message: 'App is active' }
+  socket.receive({ t: 'actionResult', id: sent.id, ok: true, verification })
+  await expect(task).resolves.toEqual({ ok: true, message: undefined, verification })
+})

@@ -91,7 +91,8 @@ let pingId = 0
 let pingSent = new Map<number, number>()
 let noticeId = 0
 let actionId = 0
-const pendingActions = new Map<number, { resolve: (r: { ok: boolean; message?: string }) => void; timer: ReturnType<typeof setTimeout> }>()
+export type ActionResult = { ok: boolean; message?: string; verification?: { state: string; message?: string } }
+const pendingActions = new Map<number, { resolve: (r: ActionResult) => void; timer: ReturnType<typeof setTimeout> }>()
 
 export function notify(message: string, level: Notice['level'] = 'info', code?: string) {
   // Repeated warnings (e.g. secure input) replace the previous one.
@@ -352,7 +353,7 @@ function handle(message: ServerMessage) {
       if (pending) {
         clearTimeout(pending.timer)
         pendingActions.delete(message.id!)
-        pending.resolve({ ok: message.ok, message: message.message })
+        pending.resolve({ ok: message.ok, message: message.message, ...(message.verification ? { verification: message.verification } : {}) })
       } else if (!message.ok && message.message) {
         notify(message.message, 'error')
       }
@@ -422,10 +423,10 @@ export function sendBinary(data: ArrayBuffer): boolean {
 }
 
 /** Run an action and resolve with the Mac's result. */
-export function runAction(action: Action): Promise<{ ok: boolean; message?: string }> {
+export function runAction(action: Action, options?: { verify?: boolean }): Promise<ActionResult> {
   const id = ++actionId
   return new Promise((resolve) => {
-    if (!send({ t: 'action', action, id })) {
+    if (!send({ t: 'action', action, id, ...(options?.verify ? { verify: true } : {}) })) {
       resolve({ ok: false, message: 'Not connected to the Mac.' })
       return
     }

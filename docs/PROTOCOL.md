@@ -164,7 +164,15 @@ Little-endian. The first byte is the type.
 `{"t":"action","action":{…},"id":n}` runs an action. If `id` is given, the Mac
 answers with `actionResult` (`{id, ok, message?}`). A failed action without an
 `id` still gets an `actionResult`, with no `id`, and so does an action the Mac
-can't read. Actions are the same objects deck buttons store, tagged by `kind`:
+can't read. The fork's `aiStatus.status.checkedAppActions` capability enables
+optional `verify:true` on an app action. Its `actionResult.verification`
+contains the existing native read-back after execution, saving one network
+round trip. This is not enabled for other action kinds. Execution failure
+has no verification; absent or unverified read-back must never count as
+verified or permit dependent typing. Older clients and manual controls keep
+their original receipt, and clients without the capability use `verifyAction`.
+
+Actions are the same objects deck buttons store, tagged by `kind`:
 
 | `kind` | Fields |
 | --- | --- |

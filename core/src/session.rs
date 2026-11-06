@@ -503,16 +503,22 @@ impl Connection {
         self.shared.engine(Command::Input { session: self.id, input });
     }
 
-    fn queue(&self, action: Action, id: Option<u32>) -> Option<ServerMessage> {
+    fn queue(&self, action: Action, id: Option<u32>, verify: bool) -> Option<ServerMessage> {
         if let Err(err) = validate_action(&action, 0) {
-            return Some(ServerMessage::ActionResult { id, ok: false, message: Some(err.to_string()) });
+            return Some(ServerMessage::ActionResult {
+                id,
+                ok: false,
+                message: Some(err.to_string()),
+                verification: None,
+            });
         }
-        match self.jobs.try_send(Job { action, id }) {
+        match self.jobs.try_send(Job { action, id, verify }) {
             Ok(()) => None,
             Err(_) => Some(ServerMessage::ActionResult {
                 id,
                 ok: false,
                 message: Some("The Mac is still busy with earlier actions.".into()),
+                verification: None,
             }),
         }
     }
@@ -620,8 +626,8 @@ impl Connection {
                 self.input(Input::Edit { delete, insert });
                 None
             }
-            ClientMessage::Action { action, id } => self.queue(action, id),
-            ClientMessage::AppAction { id, op } => self.queue(Action::App { id, op }, None),
+            ClientMessage::Action { action, id, verify } => self.queue(action, id, verify),
+            ClientMessage::AppAction { id, op } => self.queue(Action::App { id, op }, None, false),
             ClientMessage::Release => {
                 self.input(Input::ReleaseAll);
                 None
@@ -727,10 +733,12 @@ impl Connection {
             }
             ClientMessage::AiStatus => {
                 self.blocking(|shared| {
-                    Some(ServerMessage::AiStatus {
-                        status: serde_json::from_str(&shared.delegate.ai_status())
-                            .unwrap_or_else(|_| serde_json::json!({"configured":false})),
-                    })
+                    let mut status: serde_json::Value = serde_json::from_str(&shared.delegate.ai_status())
+                        .ok()
+                        .filter(|value: &serde_json::Value| value.is_object())
+                        .unwrap_or_else(|| serde_json::json!({"configured":false}));
+                    status["checkedAppActions"] = serde_json::json!(true);
+                    Some(ServerMessage::AiStatus { status })
                 });
                 None
             }
@@ -909,6 +917,7 @@ fn unreadable_reply(text: &str) -> Option<ServerMessage> {
             id: value.get("id").and_then(serde_json::Value::as_u64).and_then(|id| u32::try_from(id).ok()),
             ok: false,
             message: Some("The Mac couldn’t read that action. Reload CmdPalm on this device and try again.".into()),
+            verification: None,
         }),
         "deckSave" => Some(notice(
             NoticeLevel::Error,
@@ -938,9 +947,12 @@ fn paused_reply(message: &ClientMessage) -> Option<Option<ServerMessage>> {
             id: *id,
             plan: serde_json::json!({"decision":"noop","message":PAUSED,"steps":[]}),
         })),
-        ClientMessage::Action { id, .. } => {
-            Some(Some(ServerMessage::ActionResult { id: *id, ok: false, message: Some(PAUSED.into()) }))
-        }
+        ClientMessage::Action { id, .. } => Some(Some(ServerMessage::ActionResult {
+            id: *id,
+            ok: false,
+            message: Some(PAUSED.into()),
+            verification: None,
+        })),
         ClientMessage::AppAction { .. }
         | ClientMessage::Text { .. }
         | ClientMessage::ClipboardSet { .. }
